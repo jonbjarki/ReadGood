@@ -1,0 +1,6 @@
+@ReadGood.API_HostAddress = http://localhost:5088
+
+GET {{ReadGood.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

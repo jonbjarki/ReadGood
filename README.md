@@ -1,0 +1,3 @@
+# ReadGood
+
+README to be added soon...

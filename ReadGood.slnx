@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ReadGood.API/ReadGood.API.csproj" />
+  <Project Path="ReadGood.Application/ReadGood.Application.csproj" />
+  <Project Path="ReadGood.Domain/ReadGood.Domain.csproj" />
+  <Project Path="ReadGood.Infrastructure/ReadGood.Infrastructure.csproj" />
+</Solution>
