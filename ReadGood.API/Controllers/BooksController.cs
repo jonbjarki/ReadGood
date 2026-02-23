@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using ReadGood.Application.Features.Books.GetBookById;
 using MediatR;
 using ReadGood.Application.Features.Books.SearchBooks;
+using ReadGood.Application.Features.Books.GetBookByKey;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReadGood.API.Controllers;
 
@@ -16,18 +17,18 @@ public class BooksController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetBook(int id)
+    [HttpGet("get")]
+    public async Task<IActionResult> GetBookMetadata([FromQuery][Required] string key)
     {
-        var query = new GetBookByIdQuery(id);
-        var result = await _mediator.Send(query);
-        return Ok(result);
+        var query = new GetBookByKeyQuery(key);
+        var result = await _mediator.Send(query, HttpContext.RequestAborted);
+        return Ok(result.Book);
     }
 
     [HttpGet("search")]
-    public async Task<IActionResult> Search([FromQuery] string title) {
-        var query = new SearchBooksQuery(title);
-        var result = await _mediator.Send(query);
-        return Ok(result);
+    public async Task<IActionResult> Search([FromQuery][Required] string title,[FromQuery] int page = 1,[FromQuery] int pageSize = 10) {
+        var query = new SearchBooksQuery(title, page, pageSize);
+        var result = await _mediator.Send(query, HttpContext.RequestAborted);
+        return Ok(result.Data); 
     }
 }

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReadGood.Application.Features.Books.GetBookById
+namespace ReadGood.Infrastructure.Responses
 {
-    public record BookDetailsDto();
+    public class ISBNdbBookResponse
+    {
+        
+    }
 }

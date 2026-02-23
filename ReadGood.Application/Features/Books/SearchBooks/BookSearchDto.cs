@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ReadGood.Domain.Entities;
+using ReadGood.Domain.Common;
+using ReadGood.Infrastructure.Responses;
 
 namespace ReadGood.Application.Features.Books.SearchBooks
 {
     public class BookSearchDto
     {
-        public IEnumerable<BookSearchItem> Results { get; set; } = [];
+        public PagedResponse<BookSearchItem> Data { get; set; } = null!;
     }
 }
