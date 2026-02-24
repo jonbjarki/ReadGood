@@ -3,4 +3,5 @@
   <Project Path="ReadGood.Application/ReadGood.Application.csproj" />
   <Project Path="ReadGood.Domain/ReadGood.Domain.csproj" />
   <Project Path="ReadGood.Infrastructure/ReadGood.Infrastructure.csproj" />
+  <Project Path="ReadGood.Tests/ReadGood.Tests.csproj" />
 </Solution>
