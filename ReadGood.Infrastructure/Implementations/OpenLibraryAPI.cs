@@ -28,7 +28,7 @@ namespace ReadGood.Infrastructure.Implementations
             return $"https://covers.openlibrary.org/a/olid/{OLID}-{size}.jpg";
         }
 
-        public async Task<PagedResponse<BookSearchItem>?> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
+        public async Task<PagedResponse<BookSearchItem>> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
         {
             var query = $"/search.json?title={Uri.EscapeDataString(title)}&fields=title,author_name,author_key,key,first_publish_year,cover_i&lang=eng&limit={pageSize}&offset={(page - 1) * pageSize}";
             try
@@ -38,6 +38,12 @@ namespace ReadGood.Infrastructure.Implementations
                 if (!res.IsSuccessStatusCode)
                 {
                     var errorContent = await res.Content.ReadAsStringAsync(cancellationToken);
+                    var statusCode = (int)res.StatusCode;
+                    if (statusCode == 429)
+                    {
+                        throw new OpenLibraryRateLimitExceededException();
+                    }
+
                     throw new OpenLibraryApiException(
                         $"OpenLibrary API returned {(int)res.StatusCode} for book search",
                         query,
@@ -109,7 +115,7 @@ namespace ReadGood.Infrastructure.Implementations
             }
         }
 
-        public async Task<BookDetailsDto?> GetBookByKey(string key, CancellationToken cancellationToken)
+        public async Task<BookDetailsDto> GetBookByKey(string key, CancellationToken cancellationToken)
         {
             var url = key;
             try
@@ -118,6 +124,17 @@ namespace ReadGood.Infrastructure.Implementations
 
                 if (!res.IsSuccessStatusCode)
                 {
+                    var statusCode = (int)res.StatusCode;
+                    if (statusCode == 429)
+                    {
+                        throw new OpenLibraryRateLimitExceededException();
+                    }
+                    else if (statusCode == 404)
+                    {
+                        throw new NotFoundException("Book", key);
+                    }
+                    
+                    // Throw generic exception for other non-success status codes, including response content for debugging
                     var errorContent = await res.Content.ReadAsStringAsync(cancellationToken);
                     throw new OpenLibraryApiException(
                         $"OpenLibrary API returned {(int)res.StatusCode} when retrieving book details",
@@ -210,7 +227,7 @@ namespace ReadGood.Infrastructure.Implementations
             return null;
         }
 
-        private string? ExtractAuthorKeyFromJSON(AuthorRef[]? authors)
+        private static string? ExtractAuthorKeyFromJSON(AuthorRef[]? authors)
         {
             if (authors is not null)
             {

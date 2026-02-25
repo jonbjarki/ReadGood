@@ -19,10 +19,6 @@ namespace ReadGood.Application.Features.Books.GetBookByKey
         public async Task<GetBookByKeyDto> Handle(GetBookByKeyQuery request, CancellationToken cancellationToken)
         {
             var book = await openLibraryAPI.GetBookByKey(request.Key, cancellationToken);
-            if (book is null)
-            {
-                throw new Exception();
-            }
 
             return new GetBookByKeyDto
             {

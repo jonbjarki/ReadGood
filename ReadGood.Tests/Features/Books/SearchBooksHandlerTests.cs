@@ -39,20 +39,5 @@ namespace ReadGood.Tests.Features.Books
             Assert.NotNull(result);
             Assert.Equal(1, result.Data.Total);
         }
-
-        [Fact]
-        public async Task Handle_ThrowsException_WhenApiReturnsNull()
-        {
-            // Arrange
-            var apiMock = new Mock<IOpenLibraryAPI>();
-            apiMock.Setup(x => x.Search(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync((PagedResponse<BookSearchItem>?)null);
-
-            var handler = new SearchBooksHandler(apiMock.Object);
-            var query = new SearchBooksQuery("test", 1, 10);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => handler.Handle(query, CancellationToken.None));
-        }
     }
 }

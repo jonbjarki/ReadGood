@@ -32,7 +32,13 @@ builder.Services.AddMediatR(cfg =>
 });
 
 // Register exception handlers
+
+// Handles generic exceptions from OpenLibrary API calls, mapping them to appropriate HTTP status codes and logging details
 builder.Services.AddExceptionHandler<OpenLibraryExceptionHandler>();
+
+// Handles specific exceptions like NotFoundException and OpenLibraryRateLimitExceededException, returning standardized ProblemDetails responses
+// Returns 500 for any unknown errors
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();

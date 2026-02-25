@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Moq;
 using ReadGood.Application.Features.Books.GetBookByKey;
 using ReadGood.Domain.DTOs;
+using ReadGood.Infrastructure.Exceptions;
 using ReadGood.Infrastructure.Interfaces;
 using Xunit;
 
@@ -27,21 +28,6 @@ namespace ReadGood.Tests.Features.Books
 
             // Assert
             Assert.Equal("Sample", result.Book?.Title);
-        }
-
-        [Fact]
-        public async Task ThrowsException_WhenApiReturnsNull()
-        {
-            // Arrange
-            var apiMock = new Mock<IOpenLibraryAPI>();
-            apiMock.Setup(x => x.GetBookByKey(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((BookDetailsDto?)null);
-
-            var handler = new GetBookByKeyHandler(apiMock.Object);
-            var query = new GetBookByKeyQuery("/works/OL123W");
-
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => handler.Handle(query, CancellationToken.None));
         }
     }
 }

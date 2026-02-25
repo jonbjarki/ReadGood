@@ -11,8 +11,8 @@ namespace ReadGood.Infrastructure.Interfaces
 {
     public interface IOpenLibraryAPI
     {
-        Task<PagedResponse<BookSearchItem>?> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10);
-        Task<BookDetailsDto?> GetBookByKey(string key, CancellationToken cancellationToken);
+        Task<PagedResponse<BookSearchItem>> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10);
+        Task<BookDetailsDto> GetBookByKey(string key, CancellationToken cancellationToken);
         Task<AuthorDetailsDto?> GetAuthorByKey(string key, CancellationToken cancellationToken);
     }
 }

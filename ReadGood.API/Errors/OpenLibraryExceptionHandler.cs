@@ -54,7 +54,7 @@ public sealed class OpenLibraryExceptionHandler : IExceptionHandler
         // If OpenLibrary returned a status code, map it appropriately
         return ex.StatusCode switch
         {
-            400 => (502, "Upstream provider rejected the request"),   // your API likely built a bad query; still upstream failure to client
+            400 => (502, "Upstream provider rejected the request"),
             401 or 403 => (502, "Upstream provider denied the request"),
             404 => (502, "Upstream resource not found"),
             408 => (504, "Upstream provider timed out"),
