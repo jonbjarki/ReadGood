@@ -5,6 +5,13 @@ namespace ReadGood.API.Errors
 {
     public sealed class GlobalExceptionHandler : IExceptionHandler
     {
+
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             if (exception is NotFoundException e)
@@ -31,6 +38,7 @@ namespace ReadGood.API.Errors
             }
             else
             {
+                _logger.LogError(exception, "An unhandled exception occurred.");
                 await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
                 {
                     Status = StatusCodes.Status500InternalServerError,
