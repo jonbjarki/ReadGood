@@ -1,11 +1,7 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Moq;
 using ReadGood.Application.Features.Books.GetBookByKey;
 using ReadGood.Domain.DTOs;
-using ReadGood.Infrastructure.Exceptions;
 using ReadGood.Infrastructure.Interfaces;
-using Xunit;
 
 namespace ReadGood.Tests.Features.Books
 {

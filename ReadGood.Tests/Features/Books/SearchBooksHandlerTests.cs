@@ -1,13 +1,8 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Moq;
 using ReadGood.Application.Features.Books.SearchBooks;
 using ReadGood.Domain.Common;
-using ReadGood.Domain.DTOs;
 using ReadGood.Infrastructure.Interfaces;
 using ReadGood.Infrastructure.Responses;
-using Xunit;
 
 namespace ReadGood.Tests.Features.Books
 {

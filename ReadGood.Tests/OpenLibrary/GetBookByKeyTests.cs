@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Moq;
 using Moq.Contrib.HttpClient;
 using ReadGood.Domain.DTOs;
+using ReadGood.Infrastructure.Exceptions;
 using ReadGood.Infrastructure.Implementations;
 using ReadGood.Infrastructure.Responses;
 
@@ -17,7 +14,7 @@ namespace ReadGood.Tests.OpenLibrary
         {
             // Arrange
             var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL45883W")
+            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL91823W")
                 .ReturnsJsonResponse(new OpenLibraryWorkResponse
                 {
                     Title = "The Great Gatsby",
@@ -27,7 +24,7 @@ namespace ReadGood.Tests.OpenLibrary
             client.BaseAddress = new Uri("https://openlibrary.org");
 
             var api = new OpenLibraryAPI(client);
-            var key = "/works/OL45883W"; // Example key for "The Great Gatsby"
+            var key = "/works/OL91823W"; // Example key for "The Great Gatsby"
 
             // Act
             var result = await api.GetBookByKey(key, CancellationToken.None);
@@ -43,7 +40,7 @@ namespace ReadGood.Tests.OpenLibrary
         {
             // Arrange
             var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL99999W")
+            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL45883W")
                 .ReturnsResponse(System.Net.HttpStatusCode.NotFound);
 
             var client = handler.CreateClient();
@@ -55,6 +52,49 @@ namespace ReadGood.Tests.OpenLibrary
             // Act
             await Assert.ThrowsAsync<NotFoundException>(async () => await api.GetBookByKey(key, CancellationToken.None));
 
+        }
+
+        [Fact]
+        public async Task GetBookByKey_ThrowsOpenLibraryRateLimitExceededException_WhenRateLimitExceeded()
+        {
+            // Arrange
+            var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL45883W")
+                .ReturnsResponse(System.Net.HttpStatusCode.TooManyRequests);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri("https://openlibrary.org");
+
+            var api = new OpenLibraryAPI(client);
+            var key = "/works/OL45883W"; // Example key for a non-existent book
+
+            // Act
+            await Assert.ThrowsAsync<OpenLibraryRateLimitExceededException>(async () => await api.GetBookByKey(key, CancellationToken.None));
+
+        }
+
+        [Theory]
+        [InlineData(System.Net.HttpStatusCode.InternalServerError)]
+        [InlineData(System.Net.HttpStatusCode.BadRequest)]
+        public async Task GetBookByKey_ThrowsOpenLibraryApiException_OnNonSuccessStatusCodes(System.Net.HttpStatusCode statusCode)
+        {
+            // Arrange
+            var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            handler.SetupRequest(HttpMethod.Get, "https://openlibrary.org/works/OL45883W")
+                .ReturnsResponse(statusCode);
+
+            var client = handler.CreateClient();
+            client.BaseAddress = new Uri("https://openlibrary.org");
+
+            var api = new OpenLibraryAPI(client);
+            var key = "/works/OL45883W"; // Example key for a non-existent book
+
+            // Act
+            var exception = await Assert.ThrowsAsync<OpenLibraryApiException>(async () => await api.GetBookByKey(key, CancellationToken.None));
+            
+            // Assert
+            Assert.NotNull(exception.StatusCode);
+            Assert.Equal((int)statusCode, (int)exception.StatusCode);
         }
     }
 }
