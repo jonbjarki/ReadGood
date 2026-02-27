@@ -30,7 +30,7 @@ namespace ReadGood.Infrastructure.Implementations
 
         public static string GetSearchQueryUrl(string title, int page, int pageSize)
         {
-            return $"/search.json?title={Uri.EscapeDataString(title)}&fields=title,author_name,author_key,key,first_publish_year,cover_i&lang=eng&limit={pageSize}&offset={(page - 1) * pageSize}";
+            return $"/search.json?title={Uri.EscapeDataString(title)}&fields=title,author_name,author_key,key,first_publish_year,cover_i&language=eng&limit={pageSize}&offset={(page - 1) * pageSize}";
         }
 
         public async Task<PagedResponse<BookSearchItem>> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
