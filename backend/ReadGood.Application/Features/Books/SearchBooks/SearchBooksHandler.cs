@@ -5,16 +5,16 @@ namespace ReadGood.Application.Features.Books.SearchBooks
 {
     public class SearchBooksHandler : IRequestHandler<SearchBooksQuery, BookSearchDto>
     {
-        private readonly IOpenLibraryAPI _openLibraryAPI;
+        private readonly IGoogleBooksAPI _googleBooksAPI;
 
-        public SearchBooksHandler(IOpenLibraryAPI openLibraryAPI)
+        public SearchBooksHandler(IGoogleBooksAPI googleBooksAPI)
         {
-            _openLibraryAPI = openLibraryAPI;
+            _googleBooksAPI = googleBooksAPI;
         }
 
         public async Task<BookSearchDto> Handle(SearchBooksQuery request, CancellationToken cancellationToken)
         {
-            var search = await _openLibraryAPI.Search(request.Title, cancellationToken, request.Page, request.PageSize);
+            var search = await _googleBooksAPI.Search(request.Title, cancellationToken, request.Page, request.PageSize);
             if (search == null)
             {
                 throw new Exception();

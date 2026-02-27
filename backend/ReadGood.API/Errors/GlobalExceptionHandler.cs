@@ -25,17 +25,6 @@ namespace ReadGood.API.Errors
                 }, cancellationToken);
                 return true;
             }
-            else if (exception is OpenLibraryRateLimitExceededException)
-            {
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-                {
-                    Status = StatusCodes.Status429TooManyRequests,
-                    Title = "Open Library Rate Limit Exceeded",
-                    Type = "https://httpstatuses.com/429",
-                    Detail = "Too many requests have been made to the Open Library API. Please try again later."
-                }, cancellationToken);
-                return true;
-            }
             else
             {
                 _logger.LogError(exception, "An unhandled exception occurred.");

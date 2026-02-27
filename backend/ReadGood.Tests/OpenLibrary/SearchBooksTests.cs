@@ -32,7 +32,7 @@ namespace ReadGood.Tests.OpenLibrary
             Assert.NotNull(result);
             Assert.Equal(1, result.Total);
             Assert.Single(result.Results);
-            Assert.Equal("/works/OL123W", result.Results.First().Key);
+            Assert.Equal("/works/OL123W", result.Results.First().Id);
             Assert.Equal("Test Book", result.Results.First().Title);
         }
 

@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ReadGood.Domain.Common;
+using ReadGood.Domain.DTOs;
+using ReadGood.Infrastructure.Responses;
+
+namespace ReadGood.Infrastructure.Interfaces
+{
+    public interface IGoogleBooksAPI
+    {
+        Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10);
+        Task<BookDetailsDto> GetBookById(string id, CancellationToken cancellationToken);
+        Task<AuthorDetailsDto?> GetAuthorById(string id, CancellationToken cancellationToken);
+    }
+}

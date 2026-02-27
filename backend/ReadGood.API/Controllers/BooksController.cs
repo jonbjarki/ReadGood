@@ -12,7 +12,6 @@ namespace ReadGood.API.Controllers;
 public class BooksController : ControllerBase
 {
     private readonly IMediator _mediator;
-
     public BooksController(IMediator mediator)
     {
         _mediator = mediator;

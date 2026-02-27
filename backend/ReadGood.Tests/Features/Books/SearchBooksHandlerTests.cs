@@ -13,12 +13,12 @@ namespace ReadGood.Tests.Features.Books
         {
             // Arrange
             var apiMock = new Mock<IOpenLibraryAPI>();
-            var response = new PagedResponse<BookSearchItem>
+            var response = new PagedResponse<BookSearchItemDto>
             {
                 Total = 1,
-                Results = new List<BookSearchItem>
+                Results = new List<BookSearchItemDto>
                 {
-                    new BookSearchItem { Key = "/works/OL123W", Title = "Test" }
+                    new BookSearchItemDto { Id = "/works/OL123W", Title = "Test" }
                 }
             };
             apiMock.Setup(x => x.Search(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<int>(), It.IsAny<int>()))
