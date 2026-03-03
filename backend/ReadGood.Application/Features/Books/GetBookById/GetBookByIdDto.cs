@@ -1,8 +1,8 @@
 using ReadGood.Domain.DTOs;
 
-namespace ReadGood.Application.Features.Books.GetBookByKey
+namespace ReadGood.Application.Features.Books.GetBookById
 {
-    public class GetBookByKeyDto
+    public class GetBookByIdDto
     {
         public BookDetailsDto Book { get; set; } = null!;
     }

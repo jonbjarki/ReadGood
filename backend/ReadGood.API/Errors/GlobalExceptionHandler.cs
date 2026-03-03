@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ReadGood.Infrastructure.Exceptions;
 
 namespace ReadGood.API.Errors
 {

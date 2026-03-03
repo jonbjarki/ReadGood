@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ReadGood.Domain.Common;
 using ReadGood.Domain.DTOs;
 using ReadGood.Infrastructure.Responses;

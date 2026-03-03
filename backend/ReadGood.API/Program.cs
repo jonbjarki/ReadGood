@@ -1,7 +1,8 @@
-using ReadGood.Application.Features.Books.SearchBooks;
 using ReadGood.Infrastructure.Interfaces;
 using ReadGood.Infrastructure.Implementations;
 using ReadGood.API.Errors;
+using ReadGood.API.Handlers;
+using ReadGood.Application.Features.Books.GetBookById;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,23 +16,25 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+
 builder.Services.AddHttpClient<IGoogleBooksAPI, GoogleBooksAPI>(client =>
 {
-    client.BaseAddress = new Uri("https://www.googleapis.com/books/v1");
+    client.BaseAddress = new Uri("https://www.googleapis.com/books/v1/");
     client.Timeout = TimeSpan.FromSeconds(10);
 
     client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-});
+}).AddHttpMessageHandler<LoggingDelegatingHandler>();
 
 // Register all MediatR services
 builder.Services.AddMediatR(cfg => 
 {
-    cfg.RegisterServicesFromAssembly(typeof(SearchBooksHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(GetBookByIdHandler).Assembly);
 });
 
 // Register exception handlers
 
-// Handles specific exceptions like NotFoundException and OpenLibraryRateLimitExceededException, returning standardized ProblemDetails responses
+// Handles specific exceptions like NotFoundException and GoogleBooksRateLimitExceededException, returning standardized ProblemDetails responses
 // Returns 500 for any unknown errors
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

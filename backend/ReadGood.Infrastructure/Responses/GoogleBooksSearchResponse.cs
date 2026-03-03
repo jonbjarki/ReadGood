@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 
 namespace ReadGood.Infrastructure.Responses
 {
+    /// <summary>
+    /// Defines the JSON response from the Google Books API when performing a search query.
+    /// </summary>
     public class GoogleBooksSearchResponse
     {
         [JsonPropertyName("kind")]
@@ -33,7 +32,7 @@ namespace ReadGood.Infrastructure.Responses
         public string? SelfLink { get; set; }
 
         [JsonPropertyName("volumeInfo")]
-        public VolumeInfo VolumeInfo { get; set; } = new VolumeInfo();
+        public VolumeInfo? VolumeInfo { get; set; }
 
         [JsonPropertyName("saleInfo")]
         public SaleInfo? SaleInfo { get; set; }

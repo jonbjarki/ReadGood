@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace ReadGood.Infrastructure.Exceptions
-{
-    namespace ReadGood.Infrastructure.Exceptions
 {
     /// <summary>
     /// Exception thrown when an Google Books API request fails.
     /// </summary>
+
     public class GoogleBooksApiException : Exception
     {
         public string? RequestUrl { get; }
@@ -34,6 +28,4 @@ namespace ReadGood.Infrastructure.Exceptions
             ResponseContent = responseContent;
         }
     }
-}
-
 }

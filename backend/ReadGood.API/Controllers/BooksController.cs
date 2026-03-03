@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using ReadGood.Application.Features.Books.SearchBooks;
-using ReadGood.Application.Features.Books.GetBookByKey;
-using System.ComponentModel.DataAnnotations;
 using ReadGood.API.InputModels.Books;
+using ReadGood.Application.Features.Books.GetBookById;
 
 namespace ReadGood.API.Controllers;
 
@@ -17,10 +16,10 @@ public class BooksController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("get")]
-    public async Task<IActionResult> GetBookMetadata(GetBookMetadataInputModel inputModel)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSingleBook(string id)
     {
-        var query = new GetBookByKeyQuery(inputModel.Key);
+        var query = new GetBookByIdQuery(id);
         var result = await _mediator.Send(query, HttpContext.RequestAborted);
         return Ok(result.Book);
     }
