@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ReadGood.Infrastructure.Exceptions;
 
 namespace ReadGood.API.Errors
 {
@@ -22,17 +23,6 @@ namespace ReadGood.API.Errors
                     Title = $"{e.ResourceName} Not Found",
                     Type = "https://httpstatuses.com/404",
                     Detail = e.Message
-                }, cancellationToken);
-                return true;
-            }
-            else if (exception is OpenLibraryRateLimitExceededException)
-            {
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-                {
-                    Status = StatusCodes.Status429TooManyRequests,
-                    Title = "Open Library Rate Limit Exceeded",
-                    Type = "https://httpstatuses.com/429",
-                    Detail = "Too many requests have been made to the Open Library API. Please try again later."
                 }, cancellationToken);
                 return true;
             }

@@ -12,14 +12,14 @@ namespace ReadGood.Tests.Features.Books
         public async Task Handle_ReturnsData_WhenApiReturnsResult()
         {
             // Arrange
-            var apiMock = new Mock<IOpenLibraryAPI>();
-            var response = new PagedResponse<BookSearchItem>
+            var apiMock = new Mock<IGoogleBooksAPI>();
+            var response = new PagedResponse<BookSearchItemDto>
             {
                 Total = 1,
-                Results = new List<BookSearchItem>
-                {
-                    new BookSearchItem { Key = "/works/OL123W", Title = "Test" }
-                }
+                Results =
+                [
+                    new BookSearchItemDto { Id = "/works/OL123W", Title = "Test" }
+                ]
             };
             apiMock.Setup(x => x.Search(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(response);

@@ -6,7 +6,7 @@ namespace ReadGood.Domain.DTOs
         public string? Description { get; set; }
         public int? FirstPublishedYear { get; set; }
 
-        public AuthorDetailsDto? AuthorDetails { get; set; }
+        public string? AuthorName { get; set; }
 
     }
 }

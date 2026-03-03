@@ -5,6 +5,6 @@ namespace ReadGood.Application.Features.Books.SearchBooks
 {
     public class BookSearchDto
     {
-        public PagedResponse<BookSearchItem> Data { get; set; } = null!;
+        public PagedResponse<BookSearchItemDto> Data { get; set; } = null!;
     }
 }
