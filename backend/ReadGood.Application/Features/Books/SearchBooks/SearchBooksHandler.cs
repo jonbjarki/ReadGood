@@ -15,10 +15,6 @@ namespace ReadGood.Application.Features.Books.SearchBooks
         public async Task<BookSearchDto> Handle(SearchBooksQuery request, CancellationToken cancellationToken)
         {
             var search = await _googleBooksAPI.Search(request.Title, cancellationToken, request.Page, request.PageSize);
-            if (search == null)
-            {
-                throw new Exception();
-            }
             
             return new BookSearchDto
             {

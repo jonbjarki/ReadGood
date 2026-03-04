@@ -36,7 +36,7 @@ builder.Services.AddMediatR(cfg =>
 
 // Handles specific exceptions like NotFoundException and GoogleBooksRateLimitExceededException, returning standardized ProblemDetails responses
 // Returns 500 for any unknown errors
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<GoogleBooksExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
