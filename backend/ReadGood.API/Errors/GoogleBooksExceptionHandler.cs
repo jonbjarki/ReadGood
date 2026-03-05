@@ -15,9 +15,34 @@ namespace ReadGood.API.Errors
         }
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is GoogleBooksApiException e)
+            if (exception is GoogleBooksRateLimitExceededException)
+            {
+                _logger.LogWarning("Handling Google Books API rate limit exceeded error.");
+                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                {
+                    Status = StatusCodes.Status429TooManyRequests,
+                    Title = "Google Books API Rate Limit Exceeded",
+                    Type = "https://httpstatuses.com/429",
+                    Detail = "The Google Books API rate limit has been exceeded. Please try again later."
+                }, cancellationToken);
+                return true;
+            }
+            else if (exception is NotFoundException ex)
+            {
+                _logger.LogWarning("Handling NotFoundException for {ResourceName} with ID {ResourceId}", ex.ResourceName, ex.ResourceId);
+                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = $"{ex.ResourceName} Not Found",
+                    Type = "https://httpstatuses.com/404",
+                    Detail = ex.Message
+                }, cancellationToken);
+                return true;
+            }
+            else if (exception is GoogleBooksApiException e)
             {
                 var status = e.StatusCode ?? StatusCodes.Status500InternalServerError;
+                _logger.LogError(e, "Handling Google Books API error: {Message}", e.Message);
                 await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
                 {
                     Status = status,
