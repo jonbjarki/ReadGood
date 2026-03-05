@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using ReadGood.Domain.Common;
 using ReadGood.Domain.DTOs;
@@ -121,16 +122,18 @@ namespace ReadGood.Infrastructure.Implementations
             }
         }
 
-        public static string GetSearchQueryUrl(string query, int page, int pageSize)
+        public static string GetSearchQueryUrl(string title, string? author, string? subject, int page, int pageSize)
         {
             var startIndex = (page - 1) * pageSize;
-            var escapedString = Uri.EscapeDataString(query);
-            return $"volumes?q={escapedString}&startIndex={startIndex}&maxResults={pageSize}";
+            var escapedString = Uri.EscapeDataString(title);
+            var authorQuery = author != null ? $"+inauthor:{Uri.EscapeDataString(author)}" : "";
+            var subjectQuery = subject != null ? $"+subject:{Uri.EscapeDataString(subject)}" : "";
+            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize}";
         }
 
-        public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
+        public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, string? author = null, string? subject = null, int page = 1, int pageSize = 10)
         {
-            var query = GetSearchQueryUrl(title, page, pageSize);
+            var query = GetSearchQueryUrl(title, author, subject, page, pageSize);
             _logger.LogInformation("Searching for books with url: {Url}", httpClient.BaseAddress + query);
             var res = await httpClient.GetAsync(query, cancellationToken);
 
@@ -169,7 +172,7 @@ namespace ReadGood.Infrastructure.Implementations
                 Id = book.Id ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing ID", query, (int)res.StatusCode, null),
                 Title = book.VolumeInfo?.Title ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing title", query, (int)res.StatusCode, null),
                 Author = book.VolumeInfo?.Authors?.FirstOrDefault() ?? "",
-                FirstPublished = book.VolumeInfo?.PublishedDate,
+                FirstPublished = ParsePublishedDate(book.VolumeInfo?.PublishedDate),
                 CoverImageUrl = book.VolumeInfo?.ImageLinks?.Thumbnail ?? "",
 
             }).ToList();
@@ -181,6 +184,34 @@ namespace ReadGood.Infrastructure.Implementations
                 Results = data,
                 Total = response.TotalItems
             };
+        }
+
+        /// <summary>
+        /// Helper method to extract the year from the published date string returned by the Google Books API
+        /// </summary>
+        /// <param name="publishedDate"></param>
+        /// <returns></returns>
+        private static string? ParsePublishedDate(string? publishedDate)
+        {
+            if (string.IsNullOrEmpty(publishedDate))
+                return null;
+
+            try
+            {
+                // The published date is either in the format "YYYY" or "YYYY-MM-DD". We just want the year part.
+                var publishedYear = publishedDate.AsSpan(0, 4);
+                if (int.TryParse(publishedYear, out _)) // If the first 4 characters can be parsed as an int, we assume it's a valid year
+                {
+                    return publishedYear.ToString();
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // If the publishedDate is shorter than 4 characters, we will get an ArgumentOutOfRangeException. In that case, we just return null.
+                return null;
+            }
+
+            return null; // If we can't parse the year, return null
         }
     }
 }
