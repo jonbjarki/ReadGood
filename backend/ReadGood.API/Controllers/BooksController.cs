@@ -26,7 +26,7 @@ public class BooksController : ControllerBase
 
     [HttpGet("search")]
     public async Task<IActionResult> Search(SearchBooksInputModel inputModel) {
-        var query = new SearchBooksQuery(inputModel.Title, inputModel.Page, inputModel.PageSize);
+        var query = new SearchBooksQuery(inputModel.Title, inputModel.Page, inputModel.PageSize, inputModel.Author, inputModel.Subject);
         var result = await _mediator.Send(query, HttpContext.RequestAborted);
         return Ok(result.Data); 
     }

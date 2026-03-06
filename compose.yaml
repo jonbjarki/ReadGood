@@ -11,7 +11,7 @@ services:
       context: ./backend
       target: final
     environment:
-      - OpenLibrary:UserAgent=${OPENLIBRARY_USER_AGENT}
+      - GoogleBooksApiKey=${GOOGLEBOOKSAPIKEY}
     ports:
       - 5088:8080
   

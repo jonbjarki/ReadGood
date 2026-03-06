@@ -15,7 +15,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
         {
             // Arrange
             var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", 1, 10);
+            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
             var fullPath = BaseUrl + query;
             handler.SetupRequest(HttpMethod.Get, fullPath)
                 .ReturnsJsonResponse(new GoogleBooksSearchResponse
@@ -30,7 +30,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, logger);
 
             // Act
-            var result = await api.Search("test", CancellationToken.None, 1, 10);
+            var result = await api.Search("test", CancellationToken.None, null, null, 1, 10);
 
             // Assert
             Assert.IsType<PagedResponse<BookSearchItemDto>>(result);
@@ -46,7 +46,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
         {
             // Arrange
             var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", 1, 10);
+            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
             var fullPath = BaseUrl + query;
             handler.SetupRequest(HttpMethod.Get, fullPath)
                 .ReturnsJsonResponse(new GoogleBooksSearchResponse
@@ -61,7 +61,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, logger);
 
             // Act
-            var result = await api.Search("test", CancellationToken.None, 1, 10);
+            var result = await api.Search("test", CancellationToken.None, null, null, 1, 10);
 
             // Assert
             Assert.IsType<PagedResponse<BookSearchItemDto>>(result);
@@ -76,7 +76,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
         {
             // Arrange
             var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", 1, 10);
+            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
             var fullPath = BaseUrl + query;
             handler.SetupRequest(HttpMethod.Get, fullPath)
                 .ReturnsResponse(System.Net.HttpStatusCode.TooManyRequests);
@@ -86,7 +86,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
 
             // Act & Assert
             await Assert.ThrowsAsync<GoogleBooksRateLimitExceededException>(
-                async () => await api.Search("test", CancellationToken.None, 1, 10));
+                async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
         }
 
         [Theory]
@@ -96,7 +96,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
         {
             // Arrange
             var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", 1, 10);
+            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
             var fullPath = BaseUrl + query;
             handler.SetupRequest(HttpMethod.Get, fullPath)
                 .ReturnsResponse(statusCode);
@@ -106,7 +106,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
 
             // Act & Assert
             await Assert.ThrowsAsync<GoogleBooksApiException>(
-                async () => await api.Search("test", CancellationToken.None, 1, 10));
+                async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
         {
             // Arrange
             var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", 1, 10);
+            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
             var fullPath = BaseUrl + query;
             handler.SetupRequest(HttpMethod.Get, fullPath)
                 .ReturnsJsonResponse(new GoogleBooksSearchResponse
@@ -129,19 +129,19 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
 
             // Act & Assert
             await Assert.ThrowsAsync<ReadGood.Infrastructure.Exceptions.GoogleBooksApiException>(
-                async () => await api.Search("test", CancellationToken.None, 1, 10));
+                async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
         }
 
         [Fact]
         public void GetSearchQueryUrl_GeneratesCorrectQueryString()
         {
             // simple case
-            var url = GoogleBooksAPI.GetSearchQueryUrl("hello world", 3, 5);
+            var url = GoogleBooksAPI.GetSearchQueryUrl("hello world", null, null, 3, 5);
             // page 3, pageSize 5 -> startIndex = 10
             Assert.Equal("volumes?q=hello%20world&startIndex=10&maxResults=5", url);
 
             // verify that special characters are escaped
-            var url2 = GoogleBooksAPI.GetSearchQueryUrl("c# books", 1, 1);
+            var url2 = GoogleBooksAPI.GetSearchQueryUrl("c# books", null, null, 1, 1);
             Assert.Equal("volumes?q=c%23%20books&startIndex=0&maxResults=1", url2);
         }
 

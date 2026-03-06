@@ -3,8 +3,15 @@ using ReadGood.Infrastructure.Implementations;
 using ReadGood.API.Errors;
 using ReadGood.API.Handlers;
 using ReadGood.Application.Features.Books.GetBookById;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+    options.IncludeScopes = true;
+});
 
 // Add services to the container.
 
@@ -36,6 +43,7 @@ builder.Services.AddMediatR(cfg =>
 
 // Handles specific exceptions like NotFoundException and GoogleBooksRateLimitExceededException, returning standardized ProblemDetails responses
 // Returns 500 for any unknown errors
+builder.Services.AddExceptionHandler<GoogleBooksExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 

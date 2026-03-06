@@ -21,11 +21,11 @@ namespace ReadGood.Tests.Features.Books
                     new BookSearchItemDto { Id = "/works/OL123W", Title = "Test" }
                 ]
             };
-            apiMock.Setup(x => x.Search(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<int>(), It.IsAny<int>()))
+            apiMock.Setup(x => x.Search(It.IsAny<string>(), It.IsAny<CancellationToken>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(response);
 
             var handler = new SearchBooksHandler(apiMock.Object);
-            var query = new SearchBooksQuery("test", 1, 10);
+            var query = new SearchBooksQuery("test", 1, 10, null);
 
             // Act
             var result = await handler.Handle(query, CancellationToken.None);

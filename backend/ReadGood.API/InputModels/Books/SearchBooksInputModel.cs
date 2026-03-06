@@ -10,10 +10,16 @@ namespace ReadGood.API.InputModels.Books
         public string Title { get; set; } = "";
 
         [FromQuery]
+        public string? Author { get; set; }
+
+        [FromQuery]
+        public string? Subject { get; set; }
+
+        [FromQuery]
         public int Page { get; set; } = 1;
 
         [FromQuery]
-        [Range(1, 20)]
+        [Range(1, 40)]
         public int PageSize { get; set; } = 10;
     }
 }

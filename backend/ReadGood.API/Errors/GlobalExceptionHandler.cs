@@ -17,13 +17,16 @@ namespace ReadGood.API.Errors
         {
             if (exception is NotFoundException e)
             {
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                _logger.LogInformation("Handling NotFoundException {Exception}", e);
+                var problem = new ProblemDetails
                 {
                     Status = StatusCodes.Status404NotFound,
                     Title = $"{e.ResourceName} Not Found",
                     Type = "https://httpstatuses.com/404",
                     Detail = e.Message
-                }, cancellationToken);
+                };
+                httpContext.Response.StatusCode = problem.Status.Value;
+                await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
                 return true;
             }
             else
