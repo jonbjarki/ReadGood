@@ -88,10 +88,12 @@ namespace ReadGood.Infrastructure.Implementations
 
                 var bookDetails = new BookDetailsDto
                 {
+                    Id = response.Id,
                     Title = volumeInfo.Title,
                     Description = volumeInfo.Description,
                     FirstPublishedYear = publishedYear,
-                    AuthorName = volumeInfo.Authors?.FirstOrDefault() // Just take the first author for simplicity
+                    AuthorName = volumeInfo.Authors?.FirstOrDefault(), // Just take the first author for simplicity
+                    CoverImageUrl = volumeInfo.ImageLinks?.Thumbnail, 
                 };
 
                 _logger.LogInformation("Successfully fetched book details for ID: {BookId}", id);

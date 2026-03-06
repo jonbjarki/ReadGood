@@ -18,42 +18,35 @@ namespace ReadGood.API.Errors
             if (exception is GoogleBooksRateLimitExceededException)
             {
                 _logger.LogWarning("Handling Google Books API rate limit exceeded error.");
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                var problem = new ProblemDetails
                 {
                     Status = StatusCodes.Status429TooManyRequests,
                     Title = "Google Books API Rate Limit Exceeded",
                     Type = "https://httpstatuses.com/429",
                     Detail = "The Google Books API rate limit has been exceeded. Please try again later."
-                }, cancellationToken);
-                return true;
-            }
-            else if (exception is NotFoundException ex)
-            {
-                _logger.LogWarning("Handling NotFoundException for {ResourceName} with ID {ResourceId}", ex.ResourceName, ex.ResourceId);
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
-                {
-                    Status = StatusCodes.Status404NotFound,
-                    Title = $"{ex.ResourceName} Not Found",
-                    Type = "https://httpstatuses.com/404",
-                    Detail = ex.Message
-                }, cancellationToken);
+                };
+                httpContext.Response.StatusCode = problem.Status.Value;
+                await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
                 return true;
             }
             else if (exception is GoogleBooksApiException e)
             {
                 var status = e.StatusCode ?? StatusCodes.Status500InternalServerError;
-                _logger.LogError(e, "Handling Google Books API error: {Message}", e.Message);
-                await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
+                var problem = new ProblemDetails
                 {
                     Status = status,
                     Title = "Error from Google Books API",
                     Type = $"https://httpstatuses.com/{status}",
                     Detail = e.Message
-                }, cancellationToken);
+                };
+                _logger.LogError(e, "Handling Google Books API error: {Message}", e.Message);
+                httpContext.Response.StatusCode = status;
+                await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
                 return true;
             }
             else
             {
+                // Pass exception to the next handler
                 return false;
             }
         }
