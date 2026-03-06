@@ -1,7 +1,7 @@
 "use client";
 
 import { BookSearchItem } from "@/types/API/books-search-response";
-import ImageWithFallback from "./image-with-fallback";
+import CoverImageWithFallback from "./image-with-fallback";
 import Link from "next/link";
 
 function getSubtitle(author: string | null, firstPublished: string | null) {
@@ -25,8 +25,10 @@ export default function BooksListItem({ item }: { item: BookSearchItem }) {
 
     return (
         <li>
-            <Link href={"/books/" + item.id} className="flex flex-row gap-4 items-center">
-                <ImageWithFallback title={item.title} url={item.coverImageUrl} />
+            <Link href={"/books/" + item.id} className="flex flex-row gap-4 items-center justify-left">
+                <div className="relative w-32 h-48">
+                <CoverImageWithFallback title={item.title} url={item.coverImageUrl} />
+                </div>
                 <div className="flex flex-col gap-4">
                     <h3 className="text-sm lg:text-lg font-semibold">{item.title}</h3>
                     <p className="text-gray-600 text-xs lg:text-sm">{subtitle}</p>

@@ -17,9 +17,10 @@ export const booksSearchResponseSchema = z.object({
 
 
 export const bookItemSchema = z.object({
+    id: z.string(),
     title: z.string(),
     description: z.string().nullable(),
-    firstPublished: z.string().nullable(),
+    firstPublishedYear: z.string().nullable(),
     authorName: z.string().nullable(),
     coverImageUrl: z.string().nullable(),
 });

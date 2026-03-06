@@ -8,26 +8,25 @@ interface ImageWithFallbackProps {
 
 
 
-export default function ImageWithFallback({
+export default function CoverImageWithFallback({
     title,
-    url
+    url,
 }: ImageWithFallbackProps) {
     if (url) {
 
         return (
-            <div className='relative w-32 h-50 shrink-0'>
-                    <Image
-                        src={url}
-                        alt={`Book cover for ${title}`}
-                        fill
-                        className='rounded'
-                    />
-            </div>
+            <Image
+                src={url}
+                alt={`Book cover for ${title}`}
+                fill
+                loading='lazy'
+                className='rounded object-cover w-auto h-auto'
+            />
         );
     }
 
     return (
-        <div className="flex items-center justify-center w-32 h-50 bg-gray-200 rounded">
+        <div className={`flex items-center justify-center bg-gray-200 rounded w-full h-full`}>
             <p className="text-center text-gray-700 px-4 text-sm font-semibold">
                 {title}
             </p>
