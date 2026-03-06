@@ -46,7 +46,7 @@ namespace ReadGood.Infrastructure.Implementations
                         throw new GoogleBooksRateLimitExceededException();
                     }
 
-                    if (statusCode == 404)
+                    if (statusCode == 404 || statusCode == 503) // Books API returns 503 if book is not found
                     {
                         _logger.LogWarning("Book not found with ID: {BookId}", id);
                         throw new NotFoundException("Book", id);
