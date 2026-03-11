@@ -6,7 +6,7 @@ import { BooksSearchResponse } from "@/types/API/books-search-response";
 import { SearchParamsType } from "@/types/common";
 import { SearchPageParamsType } from "@/types/search-page-types";
 import { booksSearchResponseSchema } from "@/zod/books/books-schemas";
-import { searchPageParamsSchema } from "@/zod/search-page-schemas";
+import { searchPageParamsSchema } from "@/zod/books/books-schemas";
 import { redirect } from "next/navigation";
 import z from "zod";
     
@@ -62,11 +62,12 @@ export default async function SearchPage({
     const parsedParams = parseResult.data;
     const books = await searchBooksAction(parsedParams);
     const totalPages = Math.ceil(books.total / books.pageSize);
+    console.log("Search results for", parsedParams, "Total results:", books.total, "Total pages:", totalPages);
 
     return (
         <div className="flex flex-col gap-6">
             <SearchBar initialValue={parsedParams.title} />
-            <BooksList items={books.results} parsedParams={parsedParams} totalPages={totalPages} />
+            <BooksList items={books.results} parsedParams={parsedParams} />
         </div>
     )
 
