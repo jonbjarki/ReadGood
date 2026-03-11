@@ -60,14 +60,13 @@ export default async function SearchPage({
     }
 
     const parsedParams = parseResult.data;
-    const books = await searchBooksAction(parsedParams);
-    const totalPages = Math.ceil(books.total / books.pageSize);
-    console.log("Search results for", parsedParams, "Total results:", books.total, "Total pages:", totalPages);
+    const result = await searchBooksAction(parsedParams);
+    console.log("Search results for", parsedParams, "Has next page:", result.hasNext, "Has previous page:", result.hasPrevious);
 
     return (
         <div className="flex flex-col gap-6">
             <SearchBar initialValue={parsedParams.title} />
-            <BooksList items={books.results} parsedParams={parsedParams} />
+            <BooksList items={result.results} parsedParams={parsedParams} hasNext={result.hasNext} hasPrevious={result.hasPrevious} />
         </div>
     )
 

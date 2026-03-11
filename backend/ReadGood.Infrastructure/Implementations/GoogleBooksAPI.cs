@@ -130,12 +130,12 @@ namespace ReadGood.Infrastructure.Implementations
             var escapedString = Uri.EscapeDataString(title);
             var authorQuery = author != null ? $"+inauthor:{Uri.EscapeDataString(author)}" : "";
             var subjectQuery = subject != null ? $"+subject:{Uri.EscapeDataString(subject)}" : "";
-            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize}";
+            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize+1}"; // We fetch one extra item to determine if there is a next page
         }
 
         public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, string? author = null, string? subject = null, int page = 1, int pageSize = 10)
         {
-            var query = GetSearchQueryUrl(title, author, subject, page, pageSize+1); // We fetch one extra item to determine if there is a next page
+            var query = GetSearchQueryUrl(title, author, subject, page, pageSize); 
             _logger.LogInformation("Searching for books with url: {Url}", httpClient.BaseAddress + query);
             var res = await httpClient.GetAsync(query, cancellationToken);
 
@@ -155,10 +155,9 @@ namespace ReadGood.Infrastructure.Implementations
                     errorContent
                 );
             }
-
-            // Since there were no errors, we can parse the response.
             var response = await res.Content.ReadFromJsonAsync<GoogleBooksSearchResponse>(cancellationToken);
 
+            // Since there were no errors, we can parse the response.
             if (response is null) // This means the API returned an empty response, which is unexpected
             {
                 throw new GoogleBooksApiException(
@@ -168,6 +167,7 @@ namespace ReadGood.Infrastructure.Implementations
                     null
                 );
             }
+            _logger.LogInformation("Successfully received response from Google Books API with items count: {ItemsCount}", response.Items?.Length ?? 0);
 
             if (response.Items is null || response.Items.Length == 0) // No results found, return empty paged response
             {

@@ -16,16 +16,16 @@ export default function BooksList({ items, parsedParams, hasNext, hasPrevious }:
         <>
             <ul className="ml-4 flex flex-col gap-6">
                 {items.length === 0 && parsedParams.page === 1 && (
-                    <li>No results found.</li>
+                    <li className="text-center">No results found, try a different title, author, or fewer keywords. </li>
                 )}
                 {items.length === 0 && parsedParams.page > 1 && (
-                    <li>No more results found.</li>
+                    <li className="text-center">No more results found for query "{parsedParams.title}"</li>
                 )}
                 {items.map((item) => (
                     <BooksListItem key={item.id} item={item} />
                 ))}
             </ul>
-            <PaginationControls parsedParams={parsedParams} itemsEmpty={items.length === 0} hasNext={hasNext} hasPrevious={hasPrevious} />
+            <PaginationControls parsedParams={parsedParams} hasNext={hasNext} hasPrevious={hasPrevious} />
         </>
     )
 }

@@ -7,12 +7,6 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.AddSimpleConsole(options =>
-{
-    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-    options.IncludeScopes = true;
-});
-
 // Add services to the container.
 
 builder.Services.AddControllers()

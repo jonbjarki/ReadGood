@@ -45,51 +45,52 @@ function getPaginationLinks(currentPage: number, params: URLSearchParams): Pagin
 
 type PaginationControlsProps = {
   parsedParams: SearchPageParamsType;
-  itemsEmpty: boolean;
   hasNext: boolean;
   hasPrevious: boolean;
 };
 
 
 
-export default function PaginationControls({ parsedParams, itemsEmpty, hasNext, hasPrevious }: PaginationControlsProps) {
+export default function PaginationControls({ parsedParams, hasNext, hasPrevious }: PaginationControlsProps) {
   const params = useSearchParams(); // Used for generating links, not for reading values since we already have parsedParams
   const { page } = parsedParams;
   const links = getPaginationLinks(page, params);
 
-  if (itemsEmpty)
-    return null; // Don't show pagination controls if there are no items to paginate
+  if (!hasNext && !hasPrevious) {
+    return null; // Don't render pagination controls if there's only one page of results
+  }
 
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious href={page > 1 ? generatePageLink(page - 1, params) : "#"} />
-        </PaginationItem>
         {hasPrevious && (
+          <PaginationItem>
+            <PaginationPrevious href={page > 1 ? generatePageLink(page - 1, params) : "#"} />
+          </PaginationItem>
+        )}
+        {page > 2 && (
           <PaginationItem>
             <PaginationLink href={generatePageLink(1, params)}>
               <PaginationEllipsis />
             </PaginationLink>
           </PaginationItem>
         )}
-        {links.map(({ page, link }) => (
-          <PaginationItem key={page}>
-            <PaginationLink href={link} isActive={page === parsedParams.page}>
-              {page}
-            </PaginationLink>
-          </PaginationItem>
+        {links.map(({ page, link }, index) => (
+          // Only render a link for the last item if there is a next page, otherwise it would be misleading to show a link to a non existent page
+          !(index === links.length - 1 && !hasNext) && (
+            <PaginationItem key={page}>
+              <PaginationLink href={link} isActive={page === parsedParams.page}>
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          )
         ))}
 
         {hasNext && (
           <PaginationItem>
-            <PaginationEllipsis />
+            <PaginationNext href={generatePageLink(page + 1, params)} />
           </PaginationItem>
         )}
-
-        <PaginationItem>
-          <PaginationNext href={generatePageLink(page + 1, params)} />
-        </PaginationItem>
       </PaginationContent>
     </Pagination>
   )
