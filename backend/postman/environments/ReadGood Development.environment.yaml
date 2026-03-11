@@ -3,8 +3,9 @@ values:
   - key: base_url
     value: 'http://localhost:5088'
     enabled: true
-    type: default
   - key: book_id
-    value: 'xFr92V2k3PIC'
+    value: xFr92V2k3PIC
     enabled: true
-    type: default
+  - key: API_KEY
+    value: ''
+    enabled: true

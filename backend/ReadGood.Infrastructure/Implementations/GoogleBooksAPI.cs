@@ -135,7 +135,7 @@ namespace ReadGood.Infrastructure.Implementations
 
         public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, string? author = null, string? subject = null, int page = 1, int pageSize = 10)
         {
-            var query = GetSearchQueryUrl(title, author, subject, page, pageSize);
+            var query = GetSearchQueryUrl(title, author, subject, page, pageSize+1); // We fetch one extra item to determine if there is a next page
             _logger.LogInformation("Searching for books with url: {Url}", httpClient.BaseAddress + query);
             var res = await httpClient.GetAsync(query, cancellationToken);
 
@@ -156,9 +156,10 @@ namespace ReadGood.Infrastructure.Implementations
                 );
             }
 
+            // Since there were no errors, we can parse the response.
             var response = await res.Content.ReadFromJsonAsync<GoogleBooksSearchResponse>(cancellationToken);
 
-            if (response is null || response.Items is null) // This means the API returned an empty response, which is unexpected
+            if (response is null) // This means the API returned an empty response, which is unexpected
             {
                 throw new GoogleBooksApiException(
                     "Google Books API returned an empty response for book search",
@@ -168,8 +169,20 @@ namespace ReadGood.Infrastructure.Implementations
                 );
             }
 
+            if (response.Items is null || response.Items.Length == 0) // No results found, return empty paged response
+            {
+                return new PagedResponse<BookSearchItemDto>
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Results = [],
+                    HasNext = false,
+                    HasPrevious = page > 1 // Assume that the client is not asking for an out of bounds page, so if page > 1, we can assume there is a previous page.
+                };
+            }
 
-            var data = response.Items.Select(book => new BookSearchItemDto
+
+            var data = response.Items.Take(pageSize).Select(book => new BookSearchItemDto
             {
                 Id = book.Id ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing ID", query, (int)res.StatusCode, null),
                 Title = book.VolumeInfo?.Title ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing title", query, (int)res.StatusCode, null),
@@ -184,7 +197,8 @@ namespace ReadGood.Infrastructure.Implementations
                 Page = page,
                 PageSize = pageSize,
                 Results = data,
-                Total = response.TotalItems
+                HasNext = response.Items.Length > pageSize,
+                HasPrevious = page > 1
             };
         }
 
