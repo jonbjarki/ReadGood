@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReadGood.API.InputModels.Books
 {
-    public class SearchBooksInputModel
+    public class SearchBooksInputModel : IValidatableObject
     {
         [FromQuery]
         [Required]
@@ -21,5 +21,18 @@ namespace ReadGood.API.InputModels.Books
         [FromQuery]
         [Range(1, 40)]
         public int PageSize { get; set; } = 10;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            bool hasTitle = !string.IsNullOrWhiteSpace(Title);            
+            bool hasAuthor = !string.IsNullOrWhiteSpace(Author);
+            bool hasSubject = !string.IsNullOrWhiteSpace(Subject);
+            if (!hasTitle && !hasAuthor && !hasSubject)
+            {
+                yield return new ValidationResult(
+                    "At least one of the following fields must be provided: Title, Author, Subject.",
+                    [nameof(Title), nameof(Author), nameof(Subject)]);
+            }
+        }
     }
 }

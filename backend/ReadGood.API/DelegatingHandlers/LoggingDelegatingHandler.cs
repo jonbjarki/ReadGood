@@ -17,31 +17,38 @@ namespace ReadGood.API.Handlers
         {
             try
             {
-                logger.LogInformation("Sending HTTP request to {Url}", request.RequestUri);
-                logger.LogInformation("With headers: {Headers}", request.Headers.ToFrozenDictionary(h => h.Key, h => string.Join(", ", h.Value)));
-                if (request.RequestUri is null)
+                using (logger.BeginScope("Handling HTTP request to {Url}", request.RequestUri))
                 {
-                    logger.LogWarning("Request URI is null");
-                    throw new InvalidOperationException("Request URI cannot be null");
-                }
+                    logger.LogInformation("==== STARTING HANDLING HTTP REQUEST ====");
+                    //logger.LogInformation("With headers: {Headers}", request.Headers.ToFrozenDictionary(h => h.Key, h => string.Join(", ", h.Value)));
+                    if (request.RequestUri is null)
+                    {
+                        logger.LogError("Request URI is null");
+                        throw new InvalidOperationException("Request URI cannot be null");
+                    }
 
-                // Add the API key as a query parameter to the outgoing request
-                var oldUri = request.RequestUri.ToString();
-                var queryParams = new Dictionary<string, string?>
+                    // Add the API key as a query parameter to the outgoing request
+                    var oldUri = request.RequestUri.ToString();
+                    var queryParams = new Dictionary<string, string?>
                 {
                     { "key", configuration["GoogleBooksApiKey"] ?? throw new InvalidOperationException("GoogleBooksApiKey is not configured") }
                 };
-                var newUri = QueryHelpers.AddQueryString(oldUri, queryParams);
-                request.RequestUri = new Uri(newUri);
+                    var newUri = QueryHelpers.AddQueryString(oldUri, queryParams);
+                    request.RequestUri = new Uri(newUri);
 
-                logger.LogInformation("Modified request URL to include API key: {Url}", request.RequestUri);
-                
-                // Forwards the modified request
-                var result = await base.SendAsync(request, cancellationToken);
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        var censoredKey = string.Concat(request.RequestUri.ToString().AsSpan(0, 5), "****");
+                        logger.LogInformation("Modified request URL to include API key: {Url}", censoredKey);
+                    }
 
-                logger.LogInformation("After HTTP request");
+                    // Forwards the modified request
+                    var result = await base.SendAsync(request, cancellationToken);
 
-                return result;
+                    logger.LogInformation("==== FINISHED HANDLING HTTP REQUEST ====");
+                    return result;
+                }
+
             }
             catch (Exception e)
             {
