@@ -18,6 +18,7 @@ nupkg/
 
 # Visual Studio
 .vs/
+.vscode/
 
 # Fleet
 .fleet/
@@ -50,4 +51,3 @@ msbuild.wrn
 # Node.js build artifacts
 node_modules/
 package-lock.json
-package.json
