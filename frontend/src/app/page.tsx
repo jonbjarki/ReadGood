@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 export default async function HomePage() {
   return (
     <StrictMode>
-      <main className="dark:bg-black">
+      <main>
         <SearchBar />
       </main>
     </StrictMode>

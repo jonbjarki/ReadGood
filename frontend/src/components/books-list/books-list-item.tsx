@@ -31,7 +31,7 @@ export default function BooksListItem({ item }: { item: BookSearchItem }) {
                 </div>
                 <div className="flex flex-col gap-4">
                     <h3 className="text-sm lg:text-lg font-semibold">{item.title}</h3>
-                    <p className="text-gray-600 text-xs lg:text-sm">{subtitle}</p>
+                    <p className="text-gray-600 dark:text-gray-300 font-light text-xs lg:text-sm">{subtitle}</p>
                 </div>
             </Link>
         </li>
