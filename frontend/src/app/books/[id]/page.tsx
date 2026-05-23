@@ -42,7 +42,7 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
 
                 {/* main content */}
                 <div className="flex-1">
-                    <h1 className="text-2xl font-bold">{book.title}</h1>
+                    <h1 className="text-2xl font-bold">{book.title}</h1>    
                     <div className="mt-4 space-y-1 text-sm text-gray-600">
                         {book.authorName && (
                             <p>

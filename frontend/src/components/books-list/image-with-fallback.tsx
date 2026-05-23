@@ -13,15 +13,8 @@ export default function CoverImageWithFallback({
     url,
 }: ImageWithFallbackProps) {
     if (url) {
-
         return (
-            <Image
-                src={url}
-                alt={`Book cover for ${title}`}
-                fill
-                loading='lazy'
-                className='rounded object-cover w-auto h-auto'
-            />
+            <Image src={url} alt={`Book cover for ${title}`} fill loading='lazy' className='rounded object-cover w-auto h-auto' />
         );
     }
 
