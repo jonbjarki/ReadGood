@@ -1,15 +1,21 @@
+using ReadGood.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using ReadGood.API.Handlers;
+using ReadGood.Domain.Contexts;
+using Microsoft.EntityFrameworkCore;
 using ReadGood.Infrastructure.Interfaces;
 using ReadGood.Infrastructure.Implementations;
-using ReadGood.API.Errors;
-using ReadGood.API.Handlers;
 using ReadGood.Application.Features.Books.GetBookById;
-using Microsoft.Extensions.Options;
+using ReadGood.API.Errors;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Adds timestamped console logging
 builder.Logging.AddSimpleConsole(options =>
 {
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+    options.UseUtcTimestamp = true;
     options.IncludeScopes = true;
 });
 
@@ -25,6 +31,29 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 
+builder.Services.AddDbContextPool<BooksDbContext>(opt =>
+    opt.UseNpgsql(
+        builder.Configuration.GetConnectionString("BooksDbConnectionString"),
+        o => o
+            .SetPostgresVersion(13, 0))
+);
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options=>
+{
+    options.User.RequireUniqueEmail = true;
+})
+    .AddRoles<ApplicationRole>()
+    .AddEntityFrameworkStores<BooksDbContext>();
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+      .RequireAuthenticatedUser()
+      .Build();
+}
+);
+
 builder.Services.AddHttpClient<IGoogleBooksAPI, GoogleBooksAPI>(client =>
 {
     client.BaseAddress = new Uri("https://www.googleapis.com/books/v1/");
@@ -34,7 +63,7 @@ builder.Services.AddHttpClient<IGoogleBooksAPI, GoogleBooksAPI>(client =>
 }).AddHttpMessageHandler<LoggingDelegatingHandler>();
 
 // Register all MediatR services
-builder.Services.AddMediatR(cfg => 
+builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetBookByIdHandler).Assembly);
 });
@@ -61,7 +90,7 @@ if (app.Environment.IsDevelopment())
 
 
 // app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
