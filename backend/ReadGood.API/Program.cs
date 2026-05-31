@@ -8,6 +8,7 @@ using ReadGood.Infrastructure.Interfaces;
 using ReadGood.Infrastructure.Implementations;
 using ReadGood.Application.Features.Books.GetBookById;
 using ReadGood.API.Errors;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,10 @@ builder.Services.AddDbContextPool<BooksDbContext>(opt =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options=>
 {
     options.User.RequireUniqueEmail = true;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
 })
     .AddRoles<ApplicationRole>()
     .AddEntityFrameworkStores<BooksDbContext>();
@@ -48,9 +53,9 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options=>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-      .RequireAuthenticatedUser()
-      .Build();
+    // options.FallbackPolicy = new AuthorizationPolicyBuilder()
+    //     .RequireAuthenticatedUser()
+    //     .Build();
 }
 );
 
@@ -81,6 +86,7 @@ var app = builder.Build();
 // Enable exception handling middleware
 app.UseExceptionHandler();
 
+app.MapIdentityApi<ApplicationUser>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

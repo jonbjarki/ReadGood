@@ -7,6 +7,6 @@ namespace ReadGood.API.InputModels.Books
 {
     public class CreateUserInputModel
     {
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 }
