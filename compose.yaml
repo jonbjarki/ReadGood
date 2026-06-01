@@ -24,7 +24,7 @@ services:
     # secrets:
     #   - db-password
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/
     environment:
       - POSTGRES_DB=books
       - POSTGRES_PASSWORD=Abc.123

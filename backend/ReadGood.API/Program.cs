@@ -9,6 +9,7 @@ using ReadGood.Infrastructure.Implementations;
 using ReadGood.Application.Features.Books.GetBookById;
 using ReadGood.API.Errors;
 using Microsoft.AspNetCore.Identity;
+using ReadGood.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Logging.AddSimpleConsole(options =>
 });
 
 // Add services to the container.
+builder.Services.AddTransient<LoggingDelegatingHandler>();
+builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
+builder.Services.Configure<GoogleConfiguration>(builder.Configuration.GetSection("Google"));
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
@@ -30,7 +34,6 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddTransient<LoggingDelegatingHandler>();
 
 builder.Services.AddDbContextPool<BooksDbContext>(opt =>
     opt.UseNpgsql(
@@ -86,7 +89,6 @@ var app = builder.Build();
 // Enable exception handling middleware
 app.UseExceptionHandler();
 
-app.MapIdentityApi<ApplicationUser>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
