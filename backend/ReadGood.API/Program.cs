@@ -98,9 +98,31 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
         ValidAudience = jwtAudience,
         ValidIssuer = jwtIssuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+
+    // Extract JWT token from the HttpOnly cookie
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Prefer Authorization header when present, fallback to auth cookie.
+            var authHeader = context.Request.Headers.Authorization.ToString();
+            if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                context.Token = authHeader["Bearer ".Length..].Trim();
+                return Task.CompletedTask;
+            }
+
+            if (context.Request.Cookies.TryGetValue("X-Access-Token", out var token) && !string.IsNullOrWhiteSpace(token))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -112,6 +134,19 @@ builder.Services.AddAuthorization(options =>
         .Build();
 }
 );
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:3000") // TODO: Change to actual frontend url in production
+            .AllowAnyHeader() 
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 // Adds a typed http client for making http requests to the google books api
 builder.Services.AddHttpClient<IGoogleBooksAPI, GoogleBooksAPI>(client =>
@@ -127,6 +162,7 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(GetBookByIdHandler).Assembly);
 });
+
 
 // Register exception handlers
 
@@ -150,6 +186,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

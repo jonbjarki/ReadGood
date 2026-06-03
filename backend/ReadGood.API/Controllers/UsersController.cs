@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,18 +18,6 @@ namespace ReadGood.API.Controllers
         public async Task<IActionResult> CreateUser(CreateUserInputModel inputModel)
         {
             return await Task.FromResult(Ok());
-        }
-
-        [Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> GetMe()
-        {
-            string? email = User.FindFirstValue(ClaimTypes.Email);
-            if (email is null)
-            {
-                return Unauthorized();
-            }
-            return Ok(email);
         }
     }
 }

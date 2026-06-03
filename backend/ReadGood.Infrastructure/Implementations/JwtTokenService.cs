@@ -28,15 +28,19 @@ namespace ReadGood.Infrastructure.Implementations
             var handler = new JsonWebTokenHandler { SetDefaultTimesOnTokenCreation = false };
 
             // Configures Token Payload
+
+            var claims = new ClaimsIdentity(
+                [
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                    new Claim(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
+                    new Claim(ClaimTypes.Role, "User") // TODO: Change once roles are implemented.
+                ]);
+
             var descriptor = new SecurityTokenDescriptor
             {
                 Issuer = jwtConfiguration.Issuer,
-                Subject = new ClaimsIdentity(
-                [
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Role, "User") // TODO: Change once roles are implemented.
-                ]),
+                Subject = claims,
                 Audience = jwtConfiguration.Audience,
                 Expires = DateTime.UtcNow.AddHours(jwtConfiguration.ExpiresInHours),
                 SigningCredentials = credentials

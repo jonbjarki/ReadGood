@@ -13,19 +13,22 @@ type GoogleAuthResponse = {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,
-  providers: [Google],
-  callbacks: {
-     async signIn({ account, profile }) {
+    ...authConfig,
+    providers: [Google],
+    session: {
+        strategy: "jwt",
+    },
+    callbacks: {
+        async signIn({ account, profile }) {
             if (!profile?.email) {
                 throw new Error("Missing profile");
             }
 
             const idToken = account?.id_token;
-            console.log("ID TOKEN=",idToken);
+            console.log("ID TOKEN=", idToken);
 
-            // Authenticate with backend to create user if it does not exist
-            // Returns the application JWT
+            // Authenticate with backend and creates the user if it does not exists
+            // Backend returns custom JWT for authenticating future requests
             console.log("Making request to: ", API_URL + "auth/google")
             console.log("With body: ", JSON.stringify({ "idToken": idToken }));
 
@@ -33,15 +36,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 method: "POST",
                 body: JSON.stringify({ idToken: idToken }),
                 headers: {
-                  "Content-Type": "application/json"
-                }
+                    "Content-Type": "application/json"
+                },
+                credentials: "include"
             });
-            
             console.log("RES:", res);
-            
+
+            if (!res.ok || res.status >= 400) {
+                console.error("Failed to authenticate with backend", res.status, await res.text());
+                return false;
+            }
+
             const data = await res.json() as GoogleAuthResponse;
-            console.log("DATA=",data);
+            
+            console.log("DATA=", data);
             return true;
         },
-  }
+    }
 });

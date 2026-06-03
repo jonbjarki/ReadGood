@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using ReadGood.API.InputModels.Auth;
 using ReadGood.Application.Features.Auth.GoogleSignIn;
 using ReadGood.Domain.Entities;
@@ -51,10 +53,22 @@ namespace ReadGood.API.Controllers
             throw new NotImplementedException();
         } */
 
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            string? email = User.FindFirstValue(ClaimTypes.Email);
+            string? name = User.FindFirstValue(ClaimTypes.Name)
+                ?? User.FindFirstValue(JwtRegisteredClaimNames.Name)
+                ?? User.FindFirstValue("name");
+            return Ok($"You are authenticated as {name} ({email})");
+        }
+
+
         [AllowAnonymous]
         [HttpPost("google")]
         public async Task<IActionResult> GoogleSignInOrRegister([FromBody] GoogleSignInInputModel inputModel, CancellationToken cancellationToken)
         {
+            Console.WriteLine($"Received Google Sign-In request with ID Token: {inputModel.IdToken}");
             var command = new GoogleSignInCommand(inputModel.IdToken);
             var result = await _mediator.Send(command, cancellationToken);
 
@@ -62,12 +76,12 @@ namespace ReadGood.API.Controllers
             {
                 HttpOnly = true,    
                 Secure = true,      
-                SameSite = SameSiteMode.Lax, 
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(1) // Sets the lifespan
             };
 
             // Append the cookie to the HTTP response
-            Response.Cookies.Append("auth_token", result.JwtToken, cookieOptions);
+            Response.Cookies.Append("X-Access-Token", result.JwtToken, cookieOptions);
 
             return Ok(result);
         }
