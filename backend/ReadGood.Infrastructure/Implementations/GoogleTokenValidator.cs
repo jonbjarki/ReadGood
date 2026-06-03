@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
 using ReadGood.API.Configuration;
@@ -41,9 +37,10 @@ namespace ReadGood.Infrastructure.Implementations
                     Subject = payload.Subject
                 };
             }
-            catch (InvalidJwtException)
+            catch (InvalidJwtException ex)
             {
                 // TODO: Handle error by throwing a custom exception
+                Console.Error.WriteLine(ex.Data);
                 throw new Exception("Invalid token");
             }
 

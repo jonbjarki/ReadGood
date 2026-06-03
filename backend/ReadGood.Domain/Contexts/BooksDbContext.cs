@@ -8,7 +8,7 @@ using ReadGood.Domain.Entities;
 
 namespace ReadGood.Domain.Contexts
 {
-    public class BooksDbContext : IdentityDbContext  
+    public class BooksDbContext : IdentityDbContext<ApplicationUser>
     {
         public BooksDbContext(DbContextOptions<BooksDbContext> options) : base(options) {}
     }

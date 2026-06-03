@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ReadGood.API.InputModels.Auth;
@@ -26,7 +27,7 @@ namespace ReadGood.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("register")]
+        /* [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterInputModel inputModel)
         {
             var user = new ApplicationUser
@@ -42,18 +43,18 @@ namespace ReadGood.API.Controllers
                 return Ok("User created successfully");
             }
             return BadRequest(res.Errors);
-        }
+        } */
 
-        [HttpPost("sign-in")]
+        /* [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn()
         {
             throw new NotImplementedException();
-        }
+        } */
 
+        [AllowAnonymous]
         [HttpPost("google")]
         public async Task<IActionResult> GoogleSignInOrRegister([FromBody] GoogleSignInInputModel inputModel, CancellationToken cancellationToken)
         {
-
             var command = new GoogleSignInCommand(inputModel.IdToken);
             var result = await _mediator.Send(command, cancellationToken);
 

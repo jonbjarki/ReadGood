@@ -15,11 +15,13 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
     {
         private readonly IGoogleTokenValidator tokenValidator;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IJwtTokenService tokenService;
 
-        public GoogleSignInHandler(IGoogleTokenValidator tokenValidator, UserManager<ApplicationUser> userManager)
+        public GoogleSignInHandler(IGoogleTokenValidator tokenValidator, UserManager<ApplicationUser> userManager, IJwtTokenService tokenService)
         {
             this.tokenValidator = tokenValidator;
             this.userManager = userManager;
+            this.tokenService = tokenService;
         }
 
         public async Task<GoogleSignInResult> Handle(GoogleSignInCommand request, CancellationToken cancellationToken)
@@ -75,7 +77,8 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
             }
 
             // Generate new JWT token
-            // TODO!
+            var tokenResponse = tokenService.GenerateToken(user);
+
 
             // Return results along with token
             return new GoogleSignInResult
@@ -83,10 +86,9 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
                 Email = googleUser.Email,
                 UserId = user.Id,
                 UserName = user.UserName ?? "",
-                JwtToken = "example-token",
-                ExpiresAt = new DateTimeOffset()
+                JwtToken = tokenResponse.Token,
+                ExpiresAt = tokenResponse.ExpiresAt
             };
-
         }
     }
 }
