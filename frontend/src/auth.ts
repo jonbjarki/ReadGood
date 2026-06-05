@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import { authConfig } from '../auth.config';
 import Google from 'next-auth/providers/google';
+import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL!;
 
@@ -12,6 +13,9 @@ type GoogleAuthResponse = {
     expiresAt: Date
 }
 
+
+
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [Google],
@@ -19,7 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         strategy: "jwt",
     },
     callbacks: {
-        async signIn({ account, profile }) {
+        async jwt({ token, account, profile }) {
             if (!profile?.email) {
                 throw new Error("Missing profile");
             }
@@ -44,13 +48,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             if (!res.ok || res.status >= 400) {
                 console.error("Failed to authenticate with backend", res.status, await res.text());
-                return false;
+                return token;
             }
 
             const data = await res.json() as GoogleAuthResponse;
-            
+
+            /*             // Store the token in a cookie
+                        const cookieStore = await cookies();
+                        cookieStore.set({
+                            name: "X-Access-Token",
+                            value: data.jwtToken,
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: "lax",
+                            path: "/",
+                        }) */
+
             console.log("DATA=", data);
-            return true;
+            token.accessToken = data.jwtToken;
+            return token;
         },
+        async session({ session, token }) {
+            if (token) {
+                session.user.accessToken = token.accessToken;
+            }
+            return session;
+        }
     }
 });

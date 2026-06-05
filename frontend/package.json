@@ -34,7 +34,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "devhttps": "next dev --experimental-https"
+    "dev-https": "next dev --experimental-https"
   },
   "repository": {
     "type": "git",
