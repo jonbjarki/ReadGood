@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import { authConfig } from '../auth.config';
 import Google from 'next-auth/providers/google';
-import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL!;
 
@@ -24,11 +23,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     callbacks: {
         async jwt({ token, account, profile }) {
-            if (!profile?.email) {
-                throw new Error("Missing profile");
+            if (!account) {
+                return token;
             }
 
             const idToken = account?.id_token;
+            if (!idToken || !profile?.email) {
+                console.error("Missing Google account/profile data during sign-in", {
+                    hasIdToken: !!idToken,
+                    hasEmail: !!profile?.email,
+                });
+                return token;
+            }
             console.log("ID TOKEN=", idToken);
 
             // Authenticate with backend and creates the user if it does not exists
@@ -53,26 +59,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             const data = await res.json() as GoogleAuthResponse;
 
-            /*             // Store the token in a cookie
-                        const cookieStore = await cookies();
-                        cookieStore.set({
-                            name: "X-Access-Token",
-                            value: data.jwtToken,
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: "lax",
-                            path: "/",
-                        }) */
-
-            console.log("DATA=", data);
             token.accessToken = data.jwtToken;
+            token.sub = data.userId;
+            token.email = data.email;
+            token.name = data.userName || "";
             return token;
         },
         async session({ session, token }) {
-            if (token) {
-                session.user.accessToken = token.accessToken;
+            // We do not include the access token in the session to avoid exposing it to the client.
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.sub || "",    
+                    email: token.email || "",
+                    name: token.name || ""
+                }
             }
-            return session;
         }
     }
 });
