@@ -1,0 +1,6 @@
+name: Nginx
+values:
+  - key: base_url
+    value: ""
+    enabled: true
+color: null

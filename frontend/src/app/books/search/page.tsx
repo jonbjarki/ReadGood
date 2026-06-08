@@ -8,13 +8,15 @@ import { redirect } from "next/navigation";
 
 // Server action to fetch search results for books based on a query string
 async function searchBooksAction(title: string, author?: string, subject?: string): Promise<BooksSearchResponse> {
-    let url = process.env.API_URL + "books/search?title=" + title;
+    let url = new URL(process.env.API_URL! + "books/search");
+    url.searchParams.append("title", title);
     if (author) {
-        url += "&author=" + author;
+        url.searchParams.append("author", author);
     }
     if (subject) {
-        url += "&subject=" + subject;
+        url.searchParams.append("subject", subject);
     }
+    
     const res = await fetch(url, { next: { revalidate: 120, tags: ["books-search"] } }); // cache results for 2 minutes
 
     if (!res.ok) {
