@@ -3,6 +3,7 @@ using MediatR;
 using ReadGood.Application.Features.Books.SearchBooks;
 using ReadGood.API.InputModels.Books;
 using ReadGood.Application.Features.Books.GetBookById;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReadGood.API.Controllers;
 
@@ -16,6 +17,7 @@ public class BooksController : ControllerBase
         _mediator = mediator;
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSingleBook(string id)
     {
@@ -24,6 +26,7 @@ public class BooksController : ControllerBase
         return Ok(result.Book);
     }
 
+    [AllowAnonymous]
     [HttpGet("search")]
     public async Task<IActionResult> Search(SearchBooksInputModel inputModel) {
         var query = new SearchBooksQuery(inputModel.Title, inputModel.Page, inputModel.PageSize, inputModel.Author, inputModel.Subject);
