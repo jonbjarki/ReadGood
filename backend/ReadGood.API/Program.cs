@@ -132,6 +132,11 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
+
+    options.AddPolicy("ProfileCompleted", policy =>
+    {
+        policy.RequireClaim("profileCompleted", "true");
+    });
 }
 );
 
