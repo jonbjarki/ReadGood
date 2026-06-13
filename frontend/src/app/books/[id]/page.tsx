@@ -1,5 +1,5 @@
 import CoverImageWithFallback from "@/components/books-list/image-with-fallback";
-import type { BookItem } from "@/types/API/books-search-response";
+import type { BookItem } from "@/types/books/books-search-response";
 import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import { notFound } from "next/navigation";
