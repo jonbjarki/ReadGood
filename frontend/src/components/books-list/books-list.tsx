@@ -1,4 +1,4 @@
-import { BookSearchItem } from "@/types/API/books-search-response";
+import { BookSearchItem } from "@/types/books/books-search-response";
 import BooksListItem from "./books-list-item";
 
 export default function BooksList({ items }: { items: BookSearchItem[] }) {

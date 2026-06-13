@@ -8,6 +8,8 @@ namespace ReadGood.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {
-        public byte[]? ProfilePicture {get; set;}
+        public DateTime DateCreated { get; set; }
+        public bool ProfileCompleted { get; set; } = false; // Whether the user has filled out all required profile fields (username, email, etc.)
+        public string? ImageUrl { get; set; }
     }
 }

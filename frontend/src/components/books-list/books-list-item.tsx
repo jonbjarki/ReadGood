@@ -1,6 +1,6 @@
 "use client";
 
-import { BookSearchItem } from "@/types/API/books-search-response";
+import { BookSearchItem } from "@/types/books/books-search-response";
 import CoverImageWithFallback from "./image-with-fallback";
 import Link from "next/link";
 

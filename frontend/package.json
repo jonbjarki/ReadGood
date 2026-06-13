@@ -33,8 +33,7 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "next dev",
-    "dev-https": "next dev --experimental-https"
+    "dev": "next dev --experimental-https --webpack"
   },
   "repository": {
     "type": "git",

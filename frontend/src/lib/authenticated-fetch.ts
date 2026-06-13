@@ -13,7 +13,7 @@ class AuthenticationError extends Error {
 async function getDecodedToken() {
     // Retrieve the encoded authjs session token from cookies
     const cookieStore = await cookies();
-    
+
     // The default cookie name for https-only session tokens.
     const cookieName = "__Secure-authjs.session-token"
     const sessionCookie = cookieStore.get(cookieName)?.value;
@@ -40,17 +40,22 @@ It retrieves the JWT from the encoded session cookie and includes it in the Auth
 */
 export async function authenticatedFetch(input: URL | RequestInfo, init?: RequestInit) {
     const accessToken = await getDecodedToken();
-    if (!accessToken) {
-        throw new AuthenticationError("User is not authenticated");
+    const headers = new Headers(init?.headers || {});
+    if (accessToken) {
+        // If we have a valid access token, include it in the Authorization header
+        headers.set("Authorization", `Bearer ${accessToken}`);
     }
 
-    // Make the authenticated request to the backend API, including the JWT in the Authorization header
-    return await fetch(input, {
+    // Make the authenticated request to the backend API, including the JWT in the Authorization header if available
+    const res = await fetch(input, {
         ...init,
-        headers: {
-            ...init?.headers,
-            "Authorization": `Bearer ${accessToken}`,
-        }
+        headers
     });
 
+    if (res.status === 401) {
+        // Throw an error if the backend required authentication but the token was missing/invalid/expired
+        throw new AuthenticationError("Unauthorized: Missing, invalid, or expired token");
+    }
+
+    return res;
 }

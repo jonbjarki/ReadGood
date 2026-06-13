@@ -46,7 +46,9 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
                 {
                     Email = googleUser.Email,
                     UserName = googleUser.Name ?? googleUser.Email,
-                    EmailConfirmed = googleUser.EmailVerified
+                    EmailConfirmed = googleUser.EmailVerified,
+                    ImageUrl = googleUser.PictureUrl,
+                    DateCreated = DateTime.UtcNow
                 };
 
                 var res = await userManager.CreateAsync(user);

@@ -38,7 +38,7 @@ namespace ReadGood.API.Handlers
 
                     if (logger.IsEnabled(LogLevel.Information))
                     {
-                        var censoredKey = string.Concat(request.RequestUri.ToString().AsSpan(0, 5), "****");
+                        var censoredKey = string.Concat(queryParams["key"]?[..4], "****");
                         logger.LogInformation("Modified request URL to include API key: {Url}", censoredKey);
                     }
 
