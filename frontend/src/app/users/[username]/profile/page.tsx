@@ -40,7 +40,7 @@ export default async function ProfilePage(props: PageProps<'/users/[username]/pr
                     <h2 className="text-3xl font-bold">{user.userName}</h2>
                 </div>
                 <div className="flex flex-col gap-2 justify-center items-start">
-                    <p>Joined: {dateJoined}</p>
+                    <p>Joined: {dateJoined}</p> 
                     {/* <span className="w-full flex flex-row gap-2">
                         <b className="font-bold">x</b> <p>followers</p>
                         <b className="font-bold inline">x</b> <p>following</p>
