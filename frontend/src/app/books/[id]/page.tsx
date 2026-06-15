@@ -21,6 +21,7 @@ async function fetchBookAction(bookId: string): Promise<BookItem> {
 }
 
 export default async function BookPage({ params }: { params: Promise<{ id: string }> }) {
+    "use memo";
     const id = (await params).id;
 
     const book = await fetchBookAction(id);

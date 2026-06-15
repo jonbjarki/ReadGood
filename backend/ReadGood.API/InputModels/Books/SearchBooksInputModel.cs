@@ -19,7 +19,7 @@ namespace ReadGood.API.InputModels.Books
         public int Page { get; set; } = 1;
 
         [FromQuery]
-        [Range(1, 40)]
+        [Range(1, 30)]
         public int PageSize { get; set; } = 10;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
