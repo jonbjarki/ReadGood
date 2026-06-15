@@ -146,7 +146,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins("https://localhost:3000") // TODO: Change to actual frontend url in production
-            .AllowAnyHeader() 
+            .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });

@@ -1,18 +1,21 @@
 "use client"
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { SyntheticEvent, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
+
 export default function SearchBar({ initialValue }: { initialValue?: string }) {
+    const router = useRouter();
     const [value, setValue] = useState(initialValue || "");
     function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
         if (value.trim() === "") return; // prevent empty searches
 
-        redirect("/books/search?title=" + encodeURIComponent(value));
+        router.push("/books/search?title=" + encodeURIComponent(value));
     }
+
     return (
         <form onSubmit={handleSubmit}>
             <Field orientation="horizontal">

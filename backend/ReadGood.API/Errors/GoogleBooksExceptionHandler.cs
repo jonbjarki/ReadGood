@@ -37,7 +37,7 @@ namespace ReadGood.API.Errors
                     Status = status,
                     Title = "Error from Google Books API",
                     Type = $"https://httpstatuses.com/{status}",
-                    Detail = e.Message
+                    Detail = e.Message + (e.RequestUrl != null ? $"\n Request URL: {e.RequestUrl}." : "") + (e.ResponseContent != null ? $" \nResponse Content: {e.ResponseContent}" : "")
                 };
                 _logger.LogError(e, "Handling Google Books API error: {Message}", e.Message);
                 httpContext.Response.StatusCode = status;
