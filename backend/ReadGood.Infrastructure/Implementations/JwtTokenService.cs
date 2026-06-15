@@ -34,6 +34,7 @@ namespace ReadGood.Infrastructure.Implementations
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                     new Claim(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
+                    new Claim("profileCompleted", user.ProfileCompleted.ToString()),
                     new Claim(ClaimTypes.Role, "User") // TODO: Change once roles are implemented.
                 ]);
 

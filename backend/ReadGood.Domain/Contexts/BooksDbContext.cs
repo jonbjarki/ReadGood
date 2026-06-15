@@ -10,6 +10,9 @@ namespace ReadGood.Domain.Contexts
 {
     public class BooksDbContext : IdentityDbContext<ApplicationUser>
     {
-        public BooksDbContext(DbContextOptions<BooksDbContext> options) : base(options) {}
+        public BooksDbContext(DbContextOptions<BooksDbContext> options) : base(options) { }
+
+        public DbSet<Bookshelf> Bookshelves { get; set; } = null!;
+        public DbSet<BookshelfBook> BookshelfBooks { get; set; } = null!;
     }
 }

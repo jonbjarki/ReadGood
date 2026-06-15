@@ -29,6 +29,7 @@ builder.Logging.AddSimpleConsole(options =>
 builder.Services.AddTransient<LoggingDelegatingHandler>();
 builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IBookshelfRepository, BookshelfRepository>();
 
 builder.Services.Configure<GoogleConfiguration>(builder.Configuration.GetSection("Google"));
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JWT"));
@@ -146,7 +147,7 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins("https://localhost:3000") // TODO: Change to actual frontend url in production
-            .AllowAnyHeader() 
+            .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
