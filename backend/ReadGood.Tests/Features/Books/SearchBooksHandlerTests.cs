@@ -15,7 +15,10 @@ namespace ReadGood.Tests.Features.Books
             var apiMock = new Mock<IGoogleBooksAPI>();
             var response = new PagedResponse<BookSearchItemDto>
             {
-                Total = 1,
+                Page = 1,
+                PageSize = 10,
+                HasNext = false,
+                HasPrevious = false,
                 Results =
                 [
                     new BookSearchItemDto { Id = "/works/OL123W", Title = "Test" }
@@ -32,7 +35,7 @@ namespace ReadGood.Tests.Features.Books
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result.Data.Total);
+            Assert.Single(result.Data.Results);
         }
     }
 }
