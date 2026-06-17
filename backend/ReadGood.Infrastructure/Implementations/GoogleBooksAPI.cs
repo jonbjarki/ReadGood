@@ -129,12 +129,12 @@ namespace ReadGood.Infrastructure.Implementations
             var escapedString = Uri.EscapeDataString(title);
             var authorQuery = author != null ? $"+inauthor:{Uri.EscapeDataString(author)}" : "";
             var subjectQuery = subject != null ? $"+subject:{Uri.EscapeDataString(subject)}" : "";
-            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize}";
+            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize + 1}"; // We request pageSize + 1 items to determine if there is a next page
         }
 
         public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, string? author = null, string? subject = null, int page = 1, int pageSize = 10)
         {
-            var query = GetSearchQueryUrl(title, author, subject, page, pageSize + 1); // We request pageSize + 1 items to determine if there is a next page
+            var query = GetSearchQueryUrl(title, author, subject, page, pageSize);
             _logger.LogInformation("Searching for books with url: {Url}", httpClient.BaseAddress + query);
             var res = await httpClient.GetAsync(query, cancellationToken);
 
