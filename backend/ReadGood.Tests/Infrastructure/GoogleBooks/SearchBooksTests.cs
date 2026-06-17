@@ -34,7 +34,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
 
             // Assert
             Assert.IsType<PagedResponse<BookSearchItemDto>>(result);
-            Assert.Equal(2, result.Total);
+            Assert.Equal(2, result.Results.Count());
             Assert.Equal(1, result.Page);
             Assert.Equal(10, result.PageSize);
             Assert.Single(result.Results, r => r.Id == MockVolume1.Id);
@@ -53,7 +53,7 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
                 {
                     Kind = "books#volumes",
                     TotalItems = 0,
-                    Items = Array.Empty<Volume>()
+                    Items = []
                 });
 
             var client = CreateMockHttpClient(handler);
@@ -65,7 +65,6 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
 
             // Assert
             Assert.IsType<PagedResponse<BookSearchItemDto>>(result);
-            Assert.Equal(0, result.Total);
             Assert.Equal(1, result.Page);
             Assert.Equal(10, result.PageSize);
             Assert.Empty(result.Results);
@@ -85,8 +84,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<GoogleBooksRateLimitExceededException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksRateLimitExceededException>(
                 async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
+            Assert.IsType<GoogleBooksRateLimitExceededException>(exception);
         }
 
         [Theory]
@@ -105,44 +105,24 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act & Assert
-            await Assert.ThrowsAsync<GoogleBooksApiException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksApiException>(
                 async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
+            Assert.IsType<GoogleBooksApiException>(exception);
+            Assert.NotEqual(exception.Message, string.Empty);
         }
 
-        [Fact]
-        public async Task SearchBooks_ThrowsGoogleBooksApiException_WhenResponseContainsNoItems()
-        {
-            // Arrange
-            var handler = CreateMockHandler();
-            var query = GoogleBooksAPI.GetSearchQueryUrl("test", null, null, 1, 10);
-            var fullPath = BaseUrl + query;
-            handler.SetupRequest(HttpMethod.Get, fullPath)
-                .ReturnsJsonResponse(new GoogleBooksSearchResponse
-                {
-                    Kind = "books#volumes",
-                    TotalItems = 0,
-                    Items = null
-                });
-
-            var client = CreateMockHttpClient(handler);
-            var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ReadGood.Infrastructure.Exceptions.GoogleBooksApiException>(
-                async () => await api.Search("test", CancellationToken.None, null, null, 1, 10));
-        }
 
         [Fact]
         public void GetSearchQueryUrl_GeneratesCorrectQueryString()
         {
             // simple case
-            var url = GoogleBooksAPI.GetSearchQueryUrl("hello world", null, null, 3, 5);
+            var url = GoogleBooksAPI.GetSearchQueryUrl("book title", "author", null, 3, 5);
             // page 3, pageSize 5 -> startIndex = 10
-            Assert.Equal("volumes?q=hello%20world&startIndex=10&maxResults=5", url);
+            Assert.Equal("volumes?q=book%20title+inauthor:author&startIndex=10&maxResults=6", url);
 
             // verify that special characters are escaped
             var url2 = GoogleBooksAPI.GetSearchQueryUrl("c# books", null, null, 1, 1);
-            Assert.Equal("volumes?q=c%23%20books&startIndex=0&maxResults=1", url2);
+            Assert.Equal("volumes?q=c%23%20books&startIndex=0&maxResults=2", url2);
         }
 
     }

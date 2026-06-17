@@ -92,7 +92,7 @@ namespace ReadGood.Infrastructure.Implementations
                     Description = volumeInfo.Description,
                     FirstPublishedYear = publishedYear,
                     AuthorName = volumeInfo.Authors?.FirstOrDefault(), // Just take the first author for simplicity
-                    CoverImageUrl = volumeInfo.ImageLinks?.Thumbnail, 
+                    CoverImageUrl = volumeInfo.ImageLinks?.Thumbnail,
                 };
 
                 _logger.LogInformation("Successfully fetched book details for ID: {BookId}", id);
@@ -129,7 +129,7 @@ namespace ReadGood.Infrastructure.Implementations
             var escapedString = Uri.EscapeDataString(title);
             var authorQuery = author != null ? $"+inauthor:{Uri.EscapeDataString(author)}" : "";
             var subjectQuery = subject != null ? $"+subject:{Uri.EscapeDataString(subject)}" : "";
-            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize}";
+            return $"volumes?q={escapedString}{authorQuery}{subjectQuery}&startIndex={startIndex}&maxResults={pageSize + 1}"; // We request pageSize + 1 items to determine if there is a next page
         }
 
         public async Task<PagedResponse<BookSearchItemDto>> Search(string title, CancellationToken cancellationToken, string? author = null, string? subject = null, int page = 1, int pageSize = 10)
@@ -154,10 +154,10 @@ namespace ReadGood.Infrastructure.Implementations
                     errorContent
                 );
             }
-
             var response = await res.Content.ReadFromJsonAsync<GoogleBooksSearchResponse>(cancellationToken);
 
-            if (response is null || response.Items is null) // This means the API returned an empty response, which is unexpected
+            // Since there were no errors, we can parse the response.
+            if (response is null) // This means the API returned an empty response, which is unexpected
             {
                 throw new GoogleBooksApiException(
                     "Google Books API returned an empty response for book search",
@@ -166,12 +166,25 @@ namespace ReadGood.Infrastructure.Implementations
                     null
                 );
             }
+            _logger.LogInformation("Successfully received response from Google Books API with items count: {ItemsCount}", response.Items?.Length ?? 0);
+
+            if (response.Items is null || response.Items.Length == 0) // No results found, return empty paged response
+            {
+                return new PagedResponse<BookSearchItemDto>
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Results = [],
+                    HasNext = false,
+                    HasPrevious = page > 1 // Assume that the client is not asking for an out of bounds page, so if page > 1, we can assume there is a previous page.
+                };
+            }
 
 
-            var data = response.Items.Select(book => new BookSearchItemDto
+            var data = response.Items.Take(pageSize).Select(book => new BookSearchItemDto
             {
                 Id = book.Id ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing ID", query, (int)res.StatusCode, null),
-                Title = book.VolumeInfo?.Title ?? throw new GoogleBooksApiException("Google Books API returned a book item with missing title", query, (int)res.StatusCode, null),
+                Title = book.VolumeInfo?.Title ?? "",
                 Author = book.VolumeInfo?.Authors?.FirstOrDefault() ?? "",
                 FirstPublished = ParsePublishedDate(book.VolumeInfo?.PublishedDate),
                 CoverImageUrl = book.VolumeInfo?.ImageLinks?.Thumbnail ?? "",
@@ -183,7 +196,8 @@ namespace ReadGood.Infrastructure.Implementations
                 Page = page,
                 PageSize = pageSize,
                 Results = data,
-                Total = response.TotalItems
+                HasNext = response.Items.Length > pageSize,
+                HasPrevious = page > 1
             };
         }
 

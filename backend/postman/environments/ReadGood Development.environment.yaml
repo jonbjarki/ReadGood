@@ -1,0 +1,11 @@
+name: ReadGood Development
+values:
+  - key: base_url
+    value: 'http://localhost:5088'
+    enabled: true
+  - key: book_id
+    value: xFr92V2k3PIC
+    enabled: true
+  - key: API_KEY
+    value: ''
+    enabled: true

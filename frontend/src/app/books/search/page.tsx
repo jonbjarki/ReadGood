@@ -3,20 +3,23 @@
 import BooksList from "@/components/books-list/books-list";
 import SearchBar from "@/components/search-bar";
 import { BooksSearchResponse } from "@/types/books/books-search-response";
+import { SearchPageParamsType } from "@/types/search-page-types";
 import { booksSearchResponseSchema } from "@/zod/books/books-schemas";
+import { searchPageParamsSchema } from "@/zod/books/books-schemas";
 import { redirect } from "next/navigation";
+import z from "zod";
 
 // Server action to fetch search results for books based on a query string
-async function searchBooksAction(title: string, author?: string, subject?: string): Promise<BooksSearchResponse> {
-    let url = new URL(process.env.API_URL! + "books/search");
-    url.searchParams.append("title", title);
-    if (author) {
-        url.searchParams.append("author", author);
+async function searchBooksAction(params: SearchPageParamsType): Promise<BooksSearchResponse> {
+    let url = process.env.API_URL + "books/search?title=" + params.title + "&page=" + params.page;
+    if (params.author) {
+        url += "&author=" + params.author;
+
     }
-    if (subject) {
-        url.searchParams.append("subject", subject);
+    if (params.subject) {
+        url += "&subject=" + params.subject;
     }
-    
+
     const res = await fetch(url, { next: { revalidate: 120, tags: ["books-search"] } }); // cache results for 2 minutes
 
     if (!res.ok) {
@@ -46,18 +49,23 @@ async function searchBooksAction(title: string, author?: string, subject?: strin
 export default async function SearchPage({
     searchParams,
 }: {
-    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+    searchParams?: Promise<SearchPageParamsType>;
 }) {
     const params = await searchParams;
-    const title = params?.title?.toString();
-    if (title === undefined) return redirect("/");
+    const parseResult = await searchPageParamsSchema.safeParseAsync(params);
+    if (!parseResult.success) {
+        console.error("Invalid search page parameters", params, parseResult.error);
+        throw new Error("Invalid search parameters");
+    }
 
-    const books = await searchBooksAction(title, params?.author?.toString(), params?.subject?.toString());
+    const parsedParams = parseResult.data;
+    const result = await searchBooksAction(parsedParams);
+    console.log("Search results for", parsedParams, "Has next page:", result.hasNext, "Has previous page:", result.hasPrevious);
 
     return (
         <div className="flex flex-col gap-6">
-            <SearchBar initialValue={title} />
-            <BooksList items={books.results} />
+            <SearchBar initialValue={parsedParams.title} />
+            <BooksList items={result.results} parsedParams={parsedParams} hasNext={result.hasNext} hasPrevious={result.hasPrevious} />
         </div>
     )
 

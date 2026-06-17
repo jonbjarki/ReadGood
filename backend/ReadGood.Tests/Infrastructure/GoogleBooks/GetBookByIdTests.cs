@@ -52,9 +52,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var key = "xxxx"; // Example key for a non-existent book
 
             // Act
-            var exception = async () => await api.GetBookById(key, CancellationToken.None);
-
-            await Assert.ThrowsAsync<NotFoundException>(exception);
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                async () => await api.GetBookById(key, CancellationToken.None));
+            Assert.IsType<NotFoundException>(exception);
         }
 
         [Fact]
@@ -71,8 +71,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act and Assert
-            await Assert.ThrowsAsync<GoogleBooksRateLimitExceededException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksRateLimitExceededException>(
                 async () => await api.GetBookById(MockVolume1.Id, CancellationToken.None));
+            Assert.IsType<GoogleBooksRateLimitExceededException>(exception);
         }
 
 
@@ -90,8 +91,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act and Assert
-            await Assert.ThrowsAsync<GoogleBooksApiException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksApiException>(
                 async () => await api.GetBookById(MockVolume1.Id, CancellationToken.None));
+            Assert.IsType<GoogleBooksApiException>(exception);
         }
 
         [Fact]
@@ -114,8 +116,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act and Assert
-            await Assert.ThrowsAsync<GoogleBooksApiException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksApiException>(
                 async () => await api.GetBookById(MockVolume1.Id, CancellationToken.None));
+            Assert.IsType<GoogleBooksApiException>(exception);
         }
 
         [Fact]
@@ -288,8 +291,9 @@ namespace ReadGood.Tests.Infrastructure.GoogleBooks
             var api = new GoogleBooksAPI(client, loggerFactory.CreateLogger<GoogleBooksAPI>());
 
             // Act and Assert
-            await Assert.ThrowsAsync<GoogleBooksApiException>(
+            var exception = await Assert.ThrowsAsync<GoogleBooksApiException>(
                 async () => await api.GetBookById(MockVolume1.Id, CancellationToken.None));
+            Assert.IsType<GoogleBooksApiException>(exception);
         }
     }
 }
