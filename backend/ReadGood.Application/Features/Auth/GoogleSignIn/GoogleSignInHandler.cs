@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using ReadGood.API.Configuration;
+using ReadGood.Domain.Configuration;
 using ReadGood.Domain.Entities;
 using ReadGood.Infrastructure.Interfaces;
 
@@ -16,12 +17,16 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
         private readonly IGoogleTokenValidator tokenValidator;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IJwtTokenService tokenService;
+        private readonly IBookshelfRepository bookshelfRepository;
+        private readonly string[] defaultBookshelves;
 
-        public GoogleSignInHandler(IGoogleTokenValidator tokenValidator, UserManager<ApplicationUser> userManager, IJwtTokenService tokenService)
+        public GoogleSignInHandler(IGoogleTokenValidator tokenValidator, UserManager<ApplicationUser> userManager, IJwtTokenService tokenService, IBookshelfRepository bookshelfRepository, IOptions<BookshelvesConfiguration> bookshelvesConfig)
         {
             this.tokenValidator = tokenValidator;
             this.userManager = userManager;
             this.tokenService = tokenService;
+            this.bookshelfRepository = bookshelfRepository;
+            this.defaultBookshelves = bookshelvesConfig.Value.DefaultBookshelves;
         }
 
         public async Task<GoogleSignInResult> Handle(GoogleSignInCommand request, CancellationToken cancellationToken)
@@ -57,6 +62,18 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
                     // TODO: Throw custom exception
                     throw new Exception("Failed to create account");
                 }
+
+                if (defaultBookshelves.Length > 0)
+                {
+                    // Create default bookshelves for the new user
+                    foreach (var bookshelf in defaultBookshelves)
+                    {
+                        await bookshelfRepository.CreateBookshelf(bookshelf, user.Id, cancellationToken, true);
+                    }
+                }
+                else
+                    Console.WriteLine("No default bookshelves configured. Skipping bookshelf creation.");
+
             }
             else
             {
@@ -71,7 +88,8 @@ namespace ReadGood.Application.Features.Auth.GoogleSignIn
 
                     var linkResult = await userManager.AddLoginAsync(user, loginInfo);
 
-                    if (!linkResult.Succeeded) {
+                    if (!linkResult.Succeeded)
+                    {
                         // TODO: Throw custom exception
                         throw new Exception("Linking to account failed");
                     }

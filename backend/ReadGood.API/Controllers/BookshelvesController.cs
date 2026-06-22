@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReadGood.API.InputModels.Bookshelf;
 using ReadGood.Application.Features.Bookshelves.CreateBookshelf;
 using ReadGood.Application.Features.Bookshelves.GetBookshelf;
+using ReadGood.Application.Features.Bookshelves.GetBookshelvesByUser;
 
 namespace ReadGood.API.Controllers
 {
@@ -27,6 +28,20 @@ namespace ReadGood.API.Controllers
         {
 
             var query = new GetBookshelfQuery(id);
+            var result = await _mediator.Send(query, HttpContext.RequestAborted);
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("user/{username}")]
+        public async Task<IActionResult> GetBookshelvesByUser(string username)
+        {
+            var query = new GetBookshelvesByUserQuery(username);
             var result = await _mediator.Send(query, HttpContext.RequestAborted);
 
             if (result is null)

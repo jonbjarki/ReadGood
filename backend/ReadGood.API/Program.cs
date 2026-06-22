@@ -33,6 +33,7 @@ builder.Services.AddScoped<IBookshelfRepository, BookshelfRepository>();
 
 builder.Services.Configure<GoogleConfiguration>(builder.Configuration.GetSection("Google"));
 builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<BookshelvesConfiguration>(builder.Configuration.GetSection("Bookshelves"));
 
 
 builder.Services.AddControllers()

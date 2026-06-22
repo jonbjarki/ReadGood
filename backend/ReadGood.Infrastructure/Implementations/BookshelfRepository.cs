@@ -18,12 +18,13 @@ namespace ReadGood.Infrastructure.Implementations
             _context = context;
         }
 
-        public async Task<Bookshelf> CreateBookshelf(string name, string userId, CancellationToken cancellationToken)
+        public async Task<Bookshelf> CreateBookshelf(string name, string userId, CancellationToken cancellationToken, bool isDefaultShelf = false)
         {
             var newBookshelf = new Bookshelf
             {
                 Name = name,
-                UserId = userId
+                UserId = userId,
+                IsDefaultShelf = isDefaultShelf
             };
 
             _context.Bookshelves.Add(newBookshelf);
@@ -37,6 +38,15 @@ namespace ReadGood.Infrastructure.Implementations
             return await _context.Bookshelves
                 .AsNoTracking()
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+        }
+
+        public async Task<List<Bookshelf>> GetBookshelvesByUserId(string userId, CancellationToken cancellationToken)
+        {
+            return await _context.Bookshelves
+                .AsNoTracking()
+                .Where(b => b.UserId == userId)
+                .OrderByDescending(b => b.CreatedAt)
+                .ToListAsync(cancellationToken);
         }
     }
 }
