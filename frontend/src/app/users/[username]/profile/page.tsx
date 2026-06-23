@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import AvatarImage from "@/components/profile/avatar-image";
 import ProfileBookshelves from "@/components/profile/profile-bookshelves";
 import { Button } from "@/components/ui/button";
@@ -25,14 +26,16 @@ async function fetchUserProfile(username: string): Promise<UserProfileResponse> 
 }
 
 export default async function ProfilePage(props: PageProps<'/users/[username]/profile'>) {
+    const session = await auth();
     const { username } = await props.params;
+    const isCurrentUser = !!username && session?.user.name === username;
 
     const user = await fetchUserProfile(username);
     const dateJoined = user.dateJoined.toLocaleDateString();
 
     return (
         <main>
-            <div className="flex flex-row flex-nowrap gap-8 text-center w-fit max-w-96">
+            <div className="flex flex-row flex-nowrap gap-8 text-center w-fit mb-10">
                 <div className="flex flex-col gap-4">
                     <AvatarImage
                         src={user.imageUrl ?? undefined}
@@ -50,8 +53,9 @@ export default async function ProfilePage(props: PageProps<'/users/[username]/pr
                     <Button size="lg">Follow</Button> */}
                 </div>
             </div>
-            <Suspense>
-                <ProfileBookshelves username={user.userName} />
+
+            <Suspense fallback="Loading...">
+                <ProfileBookshelves username={user.userName} isCurrentUser={isCurrentUser} />
             </Suspense>
 
         </main>
