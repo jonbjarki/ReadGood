@@ -29,6 +29,20 @@ namespace ReadGood.API.Errors
                 await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
                 return true;
             }
+            else if (exception is BookshelfBookConflictException conflictException)
+            {
+                _logger.LogInformation("Handling BookshelfBookConflictException {Exception}", conflictException);
+                var problem = new ProblemDetails
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Bookshelf Book Conflict",
+                    Type = "https://httpstatuses.com/409",
+                    Detail = conflictException.Message
+                };
+                httpContext.Response.StatusCode = problem.Status.Value;
+                await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+                return true;
+            }
             else
             {
                 _logger.LogError(exception, "An unhandled exception occurred.");

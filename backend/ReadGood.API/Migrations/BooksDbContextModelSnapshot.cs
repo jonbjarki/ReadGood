@@ -259,7 +259,7 @@ namespace ReadGood.API.Migrations
                     b.HasIndex("Name", "UserId")
                         .IsUnique();
 
-                    b.ToTable("Bookshelves");
+                    b.ToTable("Bookshelves", (string)null);
                 });
 
             modelBuilder.Entity("ReadGood.Domain.Entities.BookshelfBook", b =>
@@ -280,7 +280,7 @@ namespace ReadGood.API.Migrations
 
                     b.HasKey("BookshelfId", "VolumeId");
 
-                    b.ToTable("BookshelfBooks");
+                    b.ToTable("BookshelfBooks", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

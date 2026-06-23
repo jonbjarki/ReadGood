@@ -1,3 +1,5 @@
+using ReadGood.Infrastructure.Responses;
+
 namespace ReadGood.Application.Features.Bookshelves.GetBookshelf
 {
     public class GetBookshelfDto
@@ -5,5 +7,6 @@ namespace ReadGood.Application.Features.Bookshelves.GetBookshelf
         public required int Id { get; set; }
         public required string Name { get; set; }
         public required string UserId { get; set; }
+        public List<BookSearchItemDto> Books { get; set; } = new();
     }
 }

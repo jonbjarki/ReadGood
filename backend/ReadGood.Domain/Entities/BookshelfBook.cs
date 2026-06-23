@@ -11,7 +11,7 @@ namespace ReadGood.Domain.Entities
     public class BookshelfBook
     {
 
-        public required int BookshelfId { get; set; }
+        public int BookshelfId { get; set; }
         public required string VolumeId { get; set; }
         public required string Title { get; set; }
         public required string ThumbnailUrl { get; set; }
