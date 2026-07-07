@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
 import { request } from "http";
 import { decode, getToken } from "next-auth/jwt";
+import { redirect, RedirectType } from 'next/navigation'
 import { cookies } from "next/headers";
 
-class AuthenticationError extends Error {
+export class AuthenticationError extends Error {
     constructor(message: string) {
         super(message);
         this.name = "AuthenticationError";
@@ -53,8 +54,8 @@ export async function authenticatedFetch(input: URL | RequestInfo, init?: Reques
     });
 
     if (res.status === 401) {
-        // Throw an error if the backend required authentication but the token was missing/invalid/expired
-        throw new AuthenticationError("Unauthorized: Missing, invalid, or expired token");
+        // If the response status is 401 (Unauthorized), redirect to the sign-in page
+        redirect('/api/auth/signin', RedirectType.replace);
     }
 
     return res;

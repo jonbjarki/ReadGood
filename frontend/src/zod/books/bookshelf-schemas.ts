@@ -8,11 +8,17 @@ export const bookshelfListItemSchema = z.object({
     description: z.string().nullable()
 });
 
+export const bookshelfListBookItemSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    coverImageUrl: z.url().nullable()
+});
+
 export const bookshelfDetailsSchema = z.object({
     id: z.number(),
     name: z.string(),
-    description: z.string().nullable(),
-    books: z.array(bookItemSchema)
+    description: z.string().nullish(),
+    books: z.array(bookshelfListBookItemSchema)
 });
 
 export const bookshelfListResponseSchema = z.array(bookshelfListItemSchema);
