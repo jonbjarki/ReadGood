@@ -1,7 +1,7 @@
 $kind: collection
-name: ReadGood API
+name: ReadTogether API
 description: |-
-  API collection for the ReadGood backend service.
+  API collection for the ReadTogether backend service.
   
   ## Endpoints
   - **Books**: Search and retrieve book information
@@ -10,7 +10,7 @@ description: |-
 variables:
   - key: base_url
     value: 'http://localhost:5088'
-    description: Base URL for the ReadGood API
+    description: Base URL for the ReadTogether API
   - key: book_id
     value: 'xFr92V2k3PIC'
     description: Sample book ID for testing

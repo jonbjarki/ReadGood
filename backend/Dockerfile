@@ -27,4 +27,4 @@ COPY --from=build /app .
 # Switch to a non-privileged user (defined in the base image) that the app will run under.
 USER $APP_UID
 
-ENTRYPOINT ["dotnet", "ReadGood.API.dll"]
+ENTRYPOINT ["dotnet", "ReadTogether.API.dll"]

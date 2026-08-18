@@ -1,4 +1,4 @@
-name: ReadGood Development
+name: ReadTogether Development
 values:
   - key: base_url
     value: 'http://localhost:5088'
