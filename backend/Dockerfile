@@ -5,7 +5,7 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 
 COPY . /source
 
-WORKDIR /source/ReadGood.API
+WORKDIR /source/ReadTogether.API
 
 # This is the architecture you’re building for, which is passed in by the builder.
 ARG TARGETARCH

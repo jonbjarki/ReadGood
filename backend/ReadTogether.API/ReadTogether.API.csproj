@@ -14,14 +14,14 @@
     <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReadGood.Application\ReadGood.Application.csproj" />
-    <ProjectReference Include="..\ReadGood.Domain\ReadGood.Domain.csproj" />
-    <ProjectReference Include="..\ReadGood.Infrastructure\ReadGood.Infrastructure.csproj" />
+    <ProjectReference Include="..\ReadTogether.Application\ReadTogether.Application.csproj" />
+    <ProjectReference Include="..\ReadTogether.Domain\ReadTogether.Domain.csproj" />
+    <ProjectReference Include="..\ReadTogether.Infrastructure\ReadTogether.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

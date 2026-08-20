@@ -8,8 +8,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 <ItemGroup>
-    <ProjectReference Include="..\ReadGood.Domain\ReadGood.Domain.csproj" />
-    <ProjectReference Include="..\ReadGood.Infrastructure\ReadGood.Infrastructure.csproj" />
+    <ProjectReference Include="..\ReadTogether.Domain\ReadTogether.Domain.csproj" />
+    <ProjectReference Include="..\ReadTogether.Infrastructure\ReadTogether.Infrastructure.csproj" />
 </ItemGroup>
 <ItemGroup>
   <PackageReference Include="MediatR" Version="14.0.0" />

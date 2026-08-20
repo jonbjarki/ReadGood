@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\ReadGood.Domain\ReadGood.Domain.csproj" />
+    <ProjectReference Include="..\ReadTogether.Domain\ReadTogether.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

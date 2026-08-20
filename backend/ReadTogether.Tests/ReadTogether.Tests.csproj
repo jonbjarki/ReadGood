@@ -20,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReadGood.Application\ReadGood.Application.csproj" />
-    <ProjectReference Include="..\ReadGood.Infrastructure\ReadGood.Infrastructure.csproj" />
-    <ProjectReference Include="..\ReadGood.Domain\ReadGood.Domain.csproj" />
+    <ProjectReference Include="..\ReadTogether.Application\ReadTogether.Application.csproj" />
+    <ProjectReference Include="..\ReadTogether.Infrastructure\ReadTogether.Infrastructure.csproj" />
+    <ProjectReference Include="..\ReadTogether.Domain\ReadTogether.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
