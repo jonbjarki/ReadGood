@@ -31,4 +31,3 @@ export const bookItemSchema = z.object({
     authorName: z.string().nullable(),
     coverImageUrl: z.string().nullable(),
 });
-

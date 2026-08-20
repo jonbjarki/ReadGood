@@ -5,6 +5,9 @@ import parse from 'html-react-parser';
 import { notFound } from "next/navigation";
 import { JSDOM } from "jsdom"
 import { Button } from "@/components/ui/button";
+import { fetchUserBookshelvesAction } from "@/actions/bookshelf-actions";
+import { auth } from "@/auth";
+import AddToBookshelfButton from "@/components/books-list/add-to-bookshelf-button";
 
 async function fetchBookAction(bookId: string): Promise<BookItem> {
     const res = await fetch(process.env.API_URL + "books/" + bookId, { next: { revalidate: 300 } }); // cache for 5 minutes
@@ -22,7 +25,6 @@ async function fetchBookAction(bookId: string): Promise<BookItem> {
 }
 
 export default async function BookPage({ params }: { params: Promise<{ id: string }> }) {
-    "use memo";
     const id = (await params).id;
 
     const book = await fetchBookAction(id);
@@ -30,7 +32,6 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
     // Sanitizes and parses description as there are often simple HTML tags included "<p> <b> <i> etc."
     const window = new JSDOM('').window;
     const purify = DOMPurify(window);
-    console.log("unsanitized:", "".concat(book.description!));
     const sanitizedDescription = purify.sanitize(book.description ?? "", {
         ALLOWED_TAGS: ["<br>"]
     })
@@ -50,7 +51,7 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
                     <div className="space-y-1 text-lg">
                         <p>{authorAndYear(book.authorName, book.firstPublishedYear)}</p>
                     </div>
-                    <Button>Add to bookshelf</Button>
+                    <AddToBookshelfButton bookId={book.id} />
                 </div>
             </div>
             <p className="leading-7 text-pretty">

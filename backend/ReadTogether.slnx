@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ReadTogether.API/ReadTogether.API.csproj" />
+  <Project Path="ReadTogether.Application/ReadTogether.Application.csproj" />
+  <Project Path="ReadTogether.Domain/ReadTogether.Domain.csproj" />
+  <Project Path="ReadTogether.Infrastructure/ReadTogether.Infrastructure.csproj" />
+  <Project Path="ReadTogether.Tests/ReadTogether.Tests.csproj" />
+</Solution>
