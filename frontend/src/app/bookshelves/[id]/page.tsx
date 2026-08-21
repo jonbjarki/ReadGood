@@ -1,5 +1,6 @@
 import { authenticatedFetch } from "@/lib/authenticated-fetch";
 import { bookshelfDetailsSchema } from "@/zod/books/bookshelf-schemas";
+import Link from "next/link";
 
 async function fetchBookshelf(id: number) {
     const res = await authenticatedFetch(process.env.API_URL + `bookshelves/${id}`);
@@ -28,8 +29,8 @@ export default async function BookshelfPage(props: PageProps<"/bookshelves/[id]"
             <h2>{bookshelf.name}</h2>
             <ul>
                 {bookshelf.books.map(book => (
-                    <li>
-                        {book.title}
+                    <li key={book.id}>
+                        <Link href={`/books/${book.id}`}>{book.title}</Link>
                     </li>
                 ))}
             </ul>

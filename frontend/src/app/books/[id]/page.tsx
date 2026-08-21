@@ -51,7 +51,7 @@ export default async function BookPage({ params }: { params: Promise<{ id: strin
                     <div className="space-y-1 text-lg">
                         <p>{authorAndYear(book.authorName, book.firstPublishedYear)}</p>
                     </div>
-                    <AddToBookshelfButton bookId={book.id} />
+                    <AddToBookshelfButton book={book} />
                 </div>
             </div>
             <p className="leading-7 text-pretty">
