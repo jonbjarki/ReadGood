@@ -47,6 +47,7 @@ namespace ReadTogether.Infrastructure.Implementations
             return await _context.Bookshelves
                 .AsNoTracking()
                 .Where(b => b.UserId == userId)
+                .Include(b => b.BookshelfBooks)
                 .OrderByDescending(b => b.CreatedAt)
                 .ToListAsync(cancellationToken);
         }
@@ -81,6 +82,52 @@ namespace ReadTogether.Infrastructure.Implementations
             {
                 throw new BookshelfBookConflictException(bookshelfId, bookId, ex);
             }
+        }
+
+        public async Task<bool> RemoveBookFromBookshelf(int bookshelfId, string bookId, string userId, CancellationToken cancellationToken)
+        {
+            var book = await _context.BookshelfBooks
+            .Include(bb => bb.Bookshelf)
+            .FirstOrDefaultAsync(bb => bb.BookshelfId == bookshelfId && bb.VolumeId == bookId, cancellationToken);
+
+            if (book is not null && book.Bookshelf.UserId == userId)
+            {
+                _context.BookshelfBooks.Remove(book);
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            else if (book is not null && book.Bookshelf.UserId != userId)
+            {
+                throw new AccessDeniedException("You are not allowed to access this resource");
+            }
+            else if (book is null)
+            {
+                throw new NotFoundException("Bookshelf Book", $"{bookshelfId}/{bookId}");
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeleteBookshelf(int bookshelfId, string userId, CancellationToken cancellationToken)
+        {
+            var bookshelf = await _context.Bookshelves.FindAsync(bookshelfId, cancellationToken);
+            if (bookshelf is null)
+            {
+                throw new NotFoundException("Bookshelf", bookshelfId.ToString());
+            }
+            else if (bookshelf is not null && !bookshelf.IsDefaultShelf)
+            {
+
+                _context.Bookshelves.Remove(bookshelf);
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            else if (bookshelf is not null && bookshelf.IsDefaultShelf)
+            {
+                throw new AccessDeniedException("Can not delete default bookshelf!");
+            }
+
+            return false;
         }
     }
 }

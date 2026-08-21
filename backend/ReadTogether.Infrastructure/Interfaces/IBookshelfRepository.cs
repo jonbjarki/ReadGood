@@ -12,5 +12,7 @@ namespace ReadTogether.Infrastructure.Interfaces
         Task<Bookshelf?> GetBookshelfById(int id, CancellationToken cancellationToken);
         Task<List<Bookshelf>> GetBookshelvesByUserId(string userId, CancellationToken cancellationToken);
         Task<BookshelfBook> AddBookToBookshelf(int bookshelfId, string bookId, string title, string thumbnailUrl, CancellationToken cancellationToken);
+        Task<bool> RemoveBookFromBookshelf(int bookshelfId, string bookId, string userId, CancellationToken cancellationToken);
+        Task<bool> DeleteBookshelf(int bookshelfId, string userId, CancellationToken cancellationToken);
     }
 }

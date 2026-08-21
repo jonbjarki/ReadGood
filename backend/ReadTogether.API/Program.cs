@@ -14,6 +14,7 @@ using ReadTogether.Domain.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,8 +73,9 @@ Sets up JWT Authentication and fetches required configuration variables
 
 // Ensures that the required configuration is provided
 var jwtConfig = builder.Configuration.GetSection("JWT");
-if (jwtConfig is null)
+if (!jwtConfig.Exists())
 {
+    Console.WriteLine(builder.Configuration.GetDebugView());
     throw new Exception("Missing required configuration section \"JWT\"");
 }
 
@@ -109,22 +111,19 @@ builder.Services.AddAuthentication(options =>
     // Extract JWT token from the HttpOnly cookie
     options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = context =>
-        {
-            // Prefer Authorization header when present, fallback to auth cookie.
-            var authHeader = context.Request.Headers.Authorization.ToString();
-            if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        OnAuthenticationFailed = context =>
             {
-                context.Token = authHeader["Bearer ".Length..].Trim();
+                String ErrorMessage = context.Exception.Message;
+                String InnerErrorMessage = String.Empty;
+                String Error = ErrorMessage;
+                if (context.Exception.InnerException != null)
+                {
+                    InnerErrorMessage = context.Exception.InnerException.Message;
+                    Error = String.Format("{0} | {1}", Error, InnerErrorMessage);
+                }
+                Console.WriteLine($"Authentication Error Occurred ${Error}");
                 return Task.CompletedTask;
             }
-
-            if (context.Request.Cookies.TryGetValue("X-Access-Token", out var token) && !string.IsNullOrWhiteSpace(token))
-            {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
     };
 });
 
