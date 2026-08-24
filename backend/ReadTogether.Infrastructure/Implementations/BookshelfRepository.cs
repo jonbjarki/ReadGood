@@ -115,12 +115,16 @@ namespace ReadTogether.Infrastructure.Implementations
             {
                 throw new NotFoundException("Bookshelf", bookshelfId.ToString());
             }
-            else if (bookshelf is not null && !bookshelf.IsDefaultShelf)
+            else if (bookshelf is not null && !bookshelf.IsDefaultShelf && bookshelf.UserId == userId)
             {
 
                 _context.Bookshelves.Remove(bookshelf);
                 await _context.SaveChangesAsync(cancellationToken);
                 return true;
+            }
+            else if (bookshelf is not null && bookshelf.UserId != userId)
+            {
+                throw new AccessDeniedException("You are not allowed to access this resource");
             }
             else if (bookshelf is not null && bookshelf.IsDefaultShelf)
             {
