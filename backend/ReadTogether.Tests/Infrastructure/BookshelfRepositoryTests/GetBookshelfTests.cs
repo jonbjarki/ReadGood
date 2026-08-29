@@ -4,24 +4,6 @@ namespace ReadTogether.Tests.Infrastructure.BookshelfRepositoryTests
 {
     public class GetBookshelfTests : BookshelfRepositoryTestsBase
     {
-        [Fact]
-        public async Task GetBookshelfById_ReturnsBookshelfIncludingBooks()
-        {
-            await using var context = CreateContext();
-            var user = CreateUser();
-            var bookshelf = CreateBookshelf();
-            await SeedAsync(context, user, bookshelf);
-            var book = CreateBookshelfBook(bookshelf.Id);
-            await SeedAsync(context, book);
-
-            var result = await new BookshelfRepository(context)
-                .GetBookshelfById(bookshelf.Id, CancellationToken.None);
-
-            Assert.NotNull(result);
-            Assert.Equal(bookshelf.Id, result.Id);
-            Assert.Single(result.BookshelfBooks);
-            Assert.Equal(book.VolumeId, result.BookshelfBooks.Single().VolumeId);
-        }
 
         [Fact]
         public async Task GetBookshelfById_ReturnsNull_WhenBookshelfDoesNotExist()
@@ -55,7 +37,6 @@ namespace ReadTogether.Tests.Infrastructure.BookshelfRepositoryTests
             Assert.Collection(result,
                 bookshelf => Assert.Equal("Newer", bookshelf.Name),
                 bookshelf => Assert.Equal("Older", bookshelf.Name));
-            Assert.Single(result[0].BookshelfBooks);
         }
 
         [Fact]

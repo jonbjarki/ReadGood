@@ -27,7 +27,7 @@ export default function BooksListItem({ item }: { item: BookSearchItem }) {
         <li>
             <Link href={"/books/" + item.id} className="flex flex-row gap-4 items-center justify-left">
                 <div className="relative w-32 h-48">
-                <CoverImageWithFallback title={item.title} url={item.coverImageUrl} />
+                    <CoverImageWithFallback title={item.title ?? ""} url={item.coverImageUrl} />
                 </div>
                 <div className="flex flex-col gap-4">
                     <h3 className="text-sm lg:text-lg font-semibold">{item.title}</h3>

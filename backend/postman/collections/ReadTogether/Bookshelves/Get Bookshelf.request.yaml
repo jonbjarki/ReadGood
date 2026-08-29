@@ -1,5 +1,5 @@
 $kind: http-request
-name: New Request
 url: ""
 method: GET
-order: 5000
+settings: {}
+order: 1000

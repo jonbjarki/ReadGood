@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ReadTogether.Domain.Common;
 using ReadTogether.Domain.Contexts;
+using ReadTogether.Domain.DTOs;
 using ReadTogether.Domain.Entities;
 using ReadTogether.Infrastructure.Exceptions;
 using ReadTogether.Infrastructure.Interfaces;
@@ -38,10 +40,38 @@ namespace ReadTogether.Infrastructure.Implementations
         {
             return await _context.Bookshelves
                 .AsNoTracking()
-                .Include(b => b.BookshelfBooks)
                 .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
         }
 
+        public async Task<PagedResponse<BookshelfBookDto>> GetBookshelfBooks(int bookshelfId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var req = _context.BookshelfBooks
+                .AsNoTracking()
+                .Where(bb => bb.BookshelfId == bookshelfId);
+
+            var count = await req.CountAsync(cancellationToken);
+
+            var books = await req
+                .OrderByDescending(bb => bb.Title)
+                .Skip(pageSize * (pageNumber - 1))
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            var res = new PagedResponse<BookshelfBookDto>
+            {
+                Results = books.Select(bb => new BookshelfBookDto
+                {
+                    VolumeId = bb.VolumeId,
+                    Title = bb.Title,
+                    ThumbnailUrl = bb.ThumbnailUrl
+                }).ToList(),
+                Page = pageNumber,
+                PageSize = pageSize,
+                NumPages = (int)Math.Ceiling((double)count / pageSize)
+            };
+
+            return res;
+        }
         public async Task<List<Bookshelf>> GetBookshelvesByUserId(string userId, CancellationToken cancellationToken)
         {
             return await _context.Bookshelves
@@ -133,5 +163,6 @@ namespace ReadTogether.Infrastructure.Implementations
 
             return false;
         }
+
     }
 }

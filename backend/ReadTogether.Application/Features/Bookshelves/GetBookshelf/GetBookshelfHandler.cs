@@ -25,13 +25,7 @@ namespace ReadTogether.Application.Features.Bookshelves.GetBookshelf
             {
                 Id = bookshelf.Id,
                 Name = bookshelf.Name,
-                UserId = bookshelf.UserId,
-                Books = bookshelf.BookshelfBooks.Select(bb => new BookSearchItemDto
-                {
-                    Id = bb.VolumeId,
-                    Title = bb.Title,
-                    CoverImageUrl = bb.ThumbnailUrl
-                }).ToList()
+                UserId = bookshelf.UserId
             };
         }
     }

@@ -1,5 +1,7 @@
+import BookshelfBook from "@/components/bookshelves/bookshelf-book";
+import BookshelfBooksList from "@/components/bookshelves/bookshelf-books-list";
 import { authenticatedFetch } from "@/lib/authenticated-fetch";
-import { bookshelfDetailsSchema } from "@/zod/books/bookshelf-schemas";
+import { bookshelfDetailsSchema, bookshelfBooksPagingParams } from "@/zod/books/bookshelf-schemas";
 import Link from "next/link";
 
 async function fetchBookshelf(id: number) {
@@ -22,17 +24,19 @@ async function fetchBookshelf(id: number) {
 
 export default async function BookshelfPage(props: PageProps<"/bookshelves/[id]">) {
     const { id } = await props.params;
+    const params = await props.searchParams;
+    const parsedParams = await bookshelfBooksPagingParams.safeParseAsync(params);
+    if (!parsedParams.success) {
+        throw new Error("Invalid query parameters provided");
+    }
+
     const bookshelfId = parseInt(id);
     const bookshelf = await fetchBookshelf(bookshelfId);
     return (
         <main>
             <h2>{bookshelf.name}</h2>
-            <ul>
-                {bookshelf.books.map(book => (
-                    <li key={book.id}>
-                        <Link href={`/books/${book.id}`}>{book.title}</Link>
-                    </li>
-                ))}
+            <ul className="flex flex-col gap-4">
+                <BookshelfBooksList bookshelfId={bookshelf.id} params={parsedParams.data} />
             </ul>
 
         </main>

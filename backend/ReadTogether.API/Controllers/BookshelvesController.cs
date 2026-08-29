@@ -10,6 +10,7 @@ using ReadTogether.API.InputModels.Bookshelves;
 using ReadTogether.Application.Features.Bookshelves.AddBookToBookshelf;
 using ReadTogether.Application.Features.Bookshelves.CreateBookshelf;
 using ReadTogether.Application.Features.Bookshelves.GetBookshelf;
+using ReadTogether.Application.Features.Bookshelves.GetBookshelfBooks;
 using ReadTogether.Application.Features.Bookshelves.GetBookshelvesByUser;
 using ReadTogether.Application.Features.Bookshelves.RemoveBookFromBookshelf;
 using Superpower.Model;
@@ -40,6 +41,14 @@ namespace ReadTogether.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("{id}/books")]
+        public async Task<IActionResult> GetBookshelfBooks(int id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var query = new GetBookshelfBooksQuery(id, pageNumber, pageSize);
+            var result = await _mediator.Send(query, HttpContext.RequestAborted);
+            return Ok(result.Data);
         }
 
         [HttpGet("user/{username}")]

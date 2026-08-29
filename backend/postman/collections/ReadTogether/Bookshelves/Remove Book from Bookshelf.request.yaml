@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{base_url}}/bookshelves/4/books/3YUrtAEACAAJ"
+method: DELETE
+order: 5000

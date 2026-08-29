@@ -63,7 +63,6 @@ namespace ReadTogether.Tests.Infrastructure.BookshelfRepositoryTests
         {
             await context.AddRangeAsync(entities);
             await context.SaveChangesAsync();
-            context.ChangeTracker.Clear();
         }
 
         public void Dispose()
